@@ -71,7 +71,7 @@
       }
     },
     "output": {
-      "output_file_name": "LHC23_pass2_golden/bottomonia/",
+      "output_file_name": "LHC23_pass2_golden/bottomonia",
       "output_merged_file_name": "multi_trial_CB2_VWG.root"
     }
   }
