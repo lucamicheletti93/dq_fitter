@@ -56,8 +56,7 @@
           "sRangeMin" : -1,
           "sRangeMax" : 1,
           "sBins" : 20,
-          "sSig" : "sig_Upsilon1s",
-          "sBkg" : "bkg"
+          "sPars" : ["sig_Upsilon1s", "bkg"]
         },
         "parForAlicePlot": ["mean_Jpsi", "width_Jpsi", "sig_Jpsi", "sig_Psi2s", "sOverB_Jpsi", "sgnf_Jpsi", "corrMatrStatus"],
         "parNameForAlicePlot": ["#mu_{J/#psi}", "#sigma_{J/#psi}", "#it{N}_{J/#psi}", "#it{N}_{#psi(2S)}", "sOverB_Jpsi", "sgnf_Jpsi", "corrMatrStatus"],
