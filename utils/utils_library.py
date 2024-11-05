@@ -161,8 +161,18 @@ def DoSystematics(path, varBin, parName, fOut):
                     found_sigFuncs = [sub for sub in sigFuncList if contains_any([sub], kname)]
                     found_bkgFuncs = [sub for sub in bkgFuncList if contains_any([sub], kname)]
                     nameTrialArray.append(found_sigFuncs[0] + " + " + found_bkgFuncs[0] + " " + fitRange[0] + " - " + fitRange[1] + " MC tails")
-                parValArray.append(fIn.Get(kname).GetBinContent(fIn.Get(kname).GetXaxis().FindBin(parName)))
-                parErrArray.append(fIn.Get(kname).GetBinError(fIn.Get(kname).GetXaxis().FindBin(parName)))
+                if "ratio" in parName:
+                    sig_Jpsi = fIn.Get(kname).GetBinContent(fIn.Get(kname).GetXaxis().FindBin("sig_Jpsi"))
+                    err_sig_Jpsi = fIn.Get(kname).GetBinError(fIn.Get(kname).GetXaxis().FindBin("sig_Jpsi"))
+                    sig_Psi2s = fIn.Get(kname).GetBinContent(fIn.Get(kname).GetXaxis().FindBin("sig_Psi2s"))
+                    err_sig_Psi2s = fIn.Get(kname).GetBinError(fIn.Get(kname).GetXaxis().FindBin("sig_Psi2s"))
+                    ratio = sig_Psi2s / sig_Jpsi
+                    err_ratio = ratio * math.sqrt((err_sig_Jpsi / sig_Jpsi) * (err_sig_Jpsi / sig_Jpsi) + (err_sig_Psi2s / sig_Psi2s) * (err_sig_Psi2s / sig_Psi2s))
+                    parValArray.append(ratio)
+                    parErrArray.append(err_ratio)
+                else:
+                    parValArray.append(fIn.Get(kname).GetBinContent(fIn.Get(kname).GetXaxis().FindBin(parName)))
+                    parErrArray.append(fIn.Get(kname).GetBinError(fIn.Get(kname).GetXaxis().FindBin(parName)))
                 index = index + 1
 
     graParVal = TGraphErrors(len(parValArray), trialIndexArray, parValArray, 0, parErrArray)
@@ -230,17 +240,29 @@ def DoSystematics(path, varBin, parName, fOut):
     if "mean" in parName:
         if "Jpsi" in parName: latexParName = "#mu_{J/#psi}"
         if "Psi2s" in parName: latexParName = "#mu_{#psi(2S)}"
+    if "ratio" in parName:
+        latexParName = "#psi(2S) / J/#psi"
     if "chi2" in parName: latexParName = "#chi^{2}_{FIT}"
     if "sig_to_bkg" in parName: latexParName = "(S / B)_{3#sigma}"
     if "significance" in parName: latexParName = "(S / #sqrts{S + B})_{3#sigma}"
     if "alpha_vn" in parName: latexParName = "#alpha = (S / [S + B])_{3#sigma}"
 
-    latexTitle.DrawLatex(0.25, 0.89, "%s = #bf{%3.2f} #pm #bf{%3.2f} (%3.2f %%) #pm #bf{%3.2f} (%3.2f %%)" % (latexParName, centralVal, statError, (statError/centralVal)*100, systError, (systError/centralVal)*100))
+    if ("mean" in parName) or ("mean" in parName) or ("ratio" in parName):
+        latexTitle.DrawLatex(0.22, 0.89, "%s = #bf{%5.4f} #pm #bf{%5.4f} (%3.2f %%) #pm #bf{%5.4f} (%3.2f %%)" % (latexParName, centralVal, statError, (statError/centralVal)*100, systError, (systError/centralVal)*100))
+    else:
+        latexTitle.DrawLatex(0.25, 0.89, "%s = #bf{%3.2f} #pm #bf{%3.2f} (%3.2f %%) #pm #bf{%3.2f} (%3.2f %%)" % (latexParName, centralVal, statError, (statError/centralVal)*100, systError, (systError/centralVal)*100))
     print("%s -> %1.0f ± %1.0f (%3.2f%%) ± %1.0f (%3.2f%%)" % (varBin, centralVal, statError, (statError/centralVal)*100, systError, (systError/centralVal)*100))
 
     num = re.findall(r'[\d\.\d]+', path)
-    fOut.write("%3.2f %3.2f %3.2f %3.2f %3.2f \n" % (float(num[4]), float(num[5]), centralVal, statError, systError))
-    #fOut.write("%3.2f %3.2f %3.2f %3.2f %3.2f \n" % (0, 20, centralVal, statError, systError))
+    #print(num)
+    if ("mean" in parName) or ("mean" in parName) or ("ratio" in parName):
+        #fOut.write("%3.2f %3.2f %3.2f %3.2f %3.2f \n" % (float(num[4]), float(num[5]), centralVal, statError, systError))
+        fOut.write("%3.2f %3.2f %5.4f %5.4f %5.4f \n" % (float(num[2]), float(num[3]), centralVal, statError, systError))
+        #fOut.write("%3.2f %3.2f %3.2f %3.2f %3.2f \n" % (0, 20, centralVal, statError, systError))
+    else:
+        #fOut.write("%3.2f %3.2f %3.2f %3.2f %3.2f \n" % (float(num[4]), float(num[5]), centralVal, statError, systError))
+        fOut.write("%3.2f %3.2f %3.2f %3.2f %3.2f \n" % (float(num[2]), float(num[3]), centralVal, statError, systError))
+        #fOut.write("%3.2f %3.2f %3.2f %3.2f %3.2f \n" % (0, 20, centralVal, statError, systError))
     canvasParVal.SaveAs("{}/systematics/{}_{}.pdf".format(path, varBin, parName))
 
 def CheckVariables(fInNames, parNames, xMin, xMax, fOutName, obs):
