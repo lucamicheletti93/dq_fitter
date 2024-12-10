@@ -224,6 +224,7 @@ class DQFitter:
 
         histResults.GetXaxis().SetBinLabel(index, "chi2")
         histResults.SetBinContent(index, reduced_chi2)
+        print("CHI2: ", reduced_chi2)
 
         extraText = [] # extra text for "propaganda" plots
 
@@ -267,7 +268,18 @@ class DQFitter:
                 min_range = sig_mean - 3. * sig_width
                 max_range = sig_mean + 3. * sig_width
                 sig_to_bkg = ComputeSigToBkg(canvasFit, "JpsiPdf", "BkgPdf", sigForIntegral, bkgForIntegral, min_range, max_range)
-                extraText.append("S/B_{3#sigma} = %5.4f" % sig_to_bkg)
+                extraText.append("S/B_{3#sigma, J/#psi} = %5.4f" % sig_to_bkg)
+                histResults.GetXaxis().SetBinLabel(index+1, "sig_to_bkg")
+                histResults.SetBinContent(index+1, sig_to_bkg)
+            if "sOverB_Psi2s" in parName:
+                sig_mean = self.fRooWorkspace.function("mean_Psi2s").getVal()
+                sig_width = self.fRooWorkspace.function("width_Psi2s").getVal()
+                sigForIntegral = self.fRooWorkspace.var("sig_Psi2s").getVal()
+                bkgForIntegral = self.fRooWorkspace.var("bkg").getVal()
+                min_range = sig_mean - 3. * sig_width
+                max_range = sig_mean + 3. * sig_width
+                sig_to_bkg = ComputeSigToBkg(canvasFit, "Psi2sPdf", "BkgPdf", sigForIntegral, bkgForIntegral, min_range, max_range)
+                extraText.append("S/B_{3#sigma, #psi(2S)} = %5.4f" % sig_to_bkg)
                 histResults.GetXaxis().SetBinLabel(index+1, "sig_to_bkg")
                 histResults.SetBinContent(index+1, sig_to_bkg)
             if "sgnf_Jpsi" in parName:
