@@ -13,26 +13,26 @@
         "pdfNameForLegend": ["J/#psi", "#psi(2S)","Background", "Fit"],
         "pdfStyle": [1, 1, 2],
         "parVal": [
-          [3.096, 0.75e-01],
-          [3.68, 0.75e-01],
+          [3.096, 0.75e-01, 0.980, 3.414, 2.070, 9.895],
+          [3.68, 0.75e-01, 0.980, 3.414, 2.070, 9.895],
           [2.04, 0.36, 0.45],
           [2761000, 45598, 6800000]
         ],
         "parLimMin": [
-          [2.90, 6.0e-02],
-          [3.2, 6.0e-02],
+          [2.90, 6.0e-02, 0.5, 3.0, 2.0, 9.0],
+          [3.2, 6.0e-02, 0.5, 3.0, 2.0, 9.0],
           [-10, -10, -10],
           [100, 1, 1000]
         ],
         "parLimMax": [
-          [3.20, 1.5e-01],
-          [3.9, 1.5e-01],
+          [3.20, 1.5e-01, 1.0, 4.0, 3.0, 10.0],
+          [3.9, 1.5e-01, 1.0, 4.0, 3.0, 10.0],
           [10, 10, 10],
           [5000000, 5000000, 9500000]
         ],
         "parName": [
-          ["mean_Jpsi", "width_Jpsi", "a_Jpsi", "b_Jpsi", "c_Jpsi", "d_Jpsi"],
-          ["sum::mean_Psi2s(mean_Jpsi,0.584)", "prod::width_Psi2s(width_Jpsi,1.05)", "a_Jpsi", "b_Jpsi", "c_Jpsi", "d_Jpsi"],
+          ["@mean_Jpsi@", "width_Jpsi", "@a_Jpsi@", "@b_Jpsi@", "@c_Jpsi@", "@d_Jpsi@"],
+          ["sum::mean_Psi2s(@mean_Jpsi@,0.584)", "prod::width_Psi2s(width_Jpsi,1.05)","@a_Jpsi@", "@b_Jpsi@", "@c_Jpsi@", "@d_Jpsi@"],
           ["aa", "bb", "cc"],
           ["sig_Jpsi", "sig_Psi2s", "bkg"]
         ],

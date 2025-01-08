@@ -1,4 +1,4 @@
-from telnetlib import DO
+#from telnetlib import DO
 import os
 import ROOT
 from ROOT import TCanvas, TFile, TH1F, TPaveText, RooRealVar, RooDataSet, RooWorkspace, RooDataHist, RooArgSet
@@ -77,28 +77,31 @@ class DQFitter:
             parLimMin = [0]*len(parName)
             parLimMax = [0]*len(parName)
 
-            if self.fPdfDict["pdfName"][i] == "Jpsi" or self.fPdfDict["pdfName"][i] == "Psi2s": #if the function is a signal shape, parameters are taken from either the cfg or the root
-                for j in range(0, len(parName)):
-                    if j<2: #if the parameter is the mean or the width, it will be taken from the configuration file
-                        parVal[j] = self.fPdfDict["parVal"][i][j]
-                        parLimMin[j] = self.fPdfDict["parLimMin"][i][j]
-                        parLimMax[j] = self.fPdfDict["parLimMax"][i][j]
-                        print(j, parVal[j], parLimMin[j], parLimMax[j])
+            for j in range(0, len(parName)):
+                if not "@" in parName[j]: #if the parameter name does not contain @, then it is free and taken from the configuration file
+                    parVal[j]    = self.fPdfDict["parVal"][i][j]
+                    parLimMin[j] = self.fPdfDict["parLimMin"][i][j]
+                    parLimMax[j] = self.fPdfDict["parLimMax"][i][j]
+                    print(j, parVal[j], parLimMin[j], parLimMax[j])
 
-                    else:  #if it is a tail parameter it will be taken from the root file
-                        parVal[j]= hTails.GetBinContent(j+1) #histogram binning starts from 1
-                        parLimMin[j] = hTails.GetBinContent(j+1)
-                        parLimMax[j] = hTails.GetBinContent(j+1)
-                        print(j, parVal[j], parLimMin[j], parLimMax[j])
+                else:  #if the parameter name contains @, then its value is taken from the root file and ixed (same value for max and min)
+                    binNumberRoot = hTails.GetXaxis().FindBin(parName[j].strip("@")) #remove @ from parameter name to correctly retrieve it from root file
+                    parVal[j]    = hTails.GetBinContent(binNumberRoot)
+                    parLimMin[j] = hTails.GetBinContent(binNumberRoot)
+                    parLimMax[j] = hTails.GetBinContent(binNumberRoot)
+                    print(j, parVal[j], parLimMin[j], parLimMax[j])
 
-                if not len(parVal) == len(parLimMin) == len(parLimMax) == len(parName):
-                    print("WARNING! Different size if the input parameters in the configuration")
-                    print(parVal)
-                    print(parLimMin)
-                    print(parLimMax)
-                    print(parName)
-                    exit()
+                parName[j] = parName[j].strip("@") #remove @ from all parNames to avoid problems in the next parts of the code
 
+            if not len(parVal) == len(parLimMin) == len(parLimMax) == len(parName):
+                print("WARNING! Different size if the input parameters in the configuration")
+                print(parVal)
+                print(parLimMin)
+                print(parLimMax)
+                print(parName)
+                exit()
+
+            if not self.fPdfDict["pdf"][i] == "SUM":
                 # Filling parameter list
                 for j in range(0, len(parVal)):
                     if ("sum" in parName[j]) or ("prod" in parName[j]):
@@ -124,62 +127,7 @@ class DQFitter:
                     nameFunc += ",{}".format(parName[j])
                 nameFunc += ")"
                 self.fRooWorkspace.factory(nameFunc)
-
-            elif self.fPdfDict["pdfName"][i] == "Bkg": #if the function is bkg, all parameters are taken from the, but function is built as above
-                parVal = self.fPdfDict["parVal"][i]
-                parLimMin = self.fPdfDict["parLimMin"][i]
-                parLimMax = self.fPdfDict["parLimMax"][i]
-                print("")
-                print(parVal)
-
-                if not len(parVal) == len(parLimMin) == len(parLimMax) == len(parName):
-                    print("WARNING! Different size if the input parameters in the configuration")
-                    print(parVal)
-                    print(parLimMin)
-                    print(parLimMax)
-                    print(parName)
-                    exit()
-
-                # Filling parameter list
-                for j in range(0, len(parVal)):
-                    if ("sum" in parName[j]) or ("prod" in parName[j]):
-                        self.fRooWorkspace.factory("{}".format(parName[j]))
-                        # Replace the exression of the parameter with the name of the parameter
-                        r1 = parName[j].find("::") + 2
-                        r2 = parName[j].find("(", r1)
-                        parName[j] = parName[j][r1:r2]
-                        self.fRooWorkspace.factory("{}[{}]".format(parName[j], parVal[j]))
-                    else:
-                        if (parLimMin[j] == parLimMax[j]):
-                            self.fRooWorkspace.factory("{}[{}]".format(parName[j], parVal[j]))
-                        else:
-                            self.fRooWorkspace.factory("{}[{},{},{}]".format(parName[j], parVal[j], parLimMin[j], parLimMax[j]))
-
-                        self.fParNames.append(parName[j]) # only free parameters will be reported in the histogram of results
-
-                # Define the pdf associating the parametes previously defined
-                nameFunc = self.fPdfDict["pdf"][i]
-                nameFunc += "Pdf::{}Pdf(fMass[{},{}]".format(self.fPdfDict["pdfName"][i], self.fMinDatasetRange, self.fMaxDatasetRange)
-                pdfList.append(self.fPdfDict["pdfName"][i])
-                for j in range(0, len(parVal)):
-                    nameFunc += ",{}".format(parName[j])
-                nameFunc += ")"
-                self.fRooWorkspace.factory(nameFunc)
-
-            else: #if the function is SUM, all parameters are taken from the cfg and the function is built in a different way
-                parVal = self.fPdfDict["parVal"][i]
-                parLimMin = self.fPdfDict["parLimMin"][i]
-                parLimMax = self.fPdfDict["parLimMax"][i]
-                print("")
-                print(parVal)
-                if not len(parVal) == len(parLimMin) == len(parLimMax) == len(parName):
-                    print("WARNING! Different size if the input parameters in the configuration")
-                    print(parVal)
-                    print(parLimMin)
-                    print(parLimMax)
-                    print(parName)
-                    exit()
-                
+            else:
                 nameFunc = self.fPdfDict["pdf"][i]
                 nameFunc += "::sum("
                 for j in range(0, len(pdfList)):
