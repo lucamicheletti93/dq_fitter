@@ -34,6 +34,8 @@ def main():
         minFitRanges   = inputCfg["input"]["pdf_dictionary"]["fitRangeMin"]
         maxFitRanges   = inputCfg["input"]["pdf_dictionary"]["fitRangeMax"]
 
+        tailRootFileName = inputCfg["input"]["tailRootFileName"] #NEW
+        tailHistName = inputCfg["input"]["tailHistName"] #NEW
         listOfOutputFileNames = [] # list of output file names
         
         if not path.isdir(outputFileName):
@@ -47,7 +49,7 @@ def main():
                 print(inputFileName)
                 dqFitter = DQFitter(inputFileName, histName, outputFileName, minFitRange, maxFitRange)
                 print(inputCfg["input"]["pdf_dictionary"]["parName"])
-                dqFitter.SetFitConfig(pdfDictionary)
+                dqFitter.SetFitConfig(pdfDictionary, tailRootFileName, tailHistName)
                 dqFitter.SingleFit()
                 listOfOutputFileNames.append(dqFitter.GetFileOutName())
 
@@ -56,7 +58,7 @@ def main():
             listOfOutputFileNamesToMerge = " ".join(listOfOutputFileNames)
             mergingCommand = mergedFileName + listOfOutputFileNamesToMerge
             print(mergingCommand)
-            os.system(f'hadd {mergingCommand}')
+            os.system(f'hadd -f {mergingCommand}') # -f option to overwrite merged file when rerunning the code
             # Delete unmerged files
             for listOfOutputFileName in listOfOutputFileNames:
                 os.system(f'rm {listOfOutputFileName}')

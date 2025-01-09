@@ -1,4 +1,4 @@
-from telnetlib import DO
+#from telnetlib import DO
 import os
 import ROOT
 from ROOT import TCanvas, TFile, TH1F, TPaveText, RooRealVar, RooDataSet, RooWorkspace, RooDataHist, RooArgSet
@@ -9,6 +9,8 @@ from utils.utils_library import ComputeSigToBkg, ComputeSignificance, ComputeAlp
 class DQFitter:
     def __init__(self, fInName, fInputName, fOutPath, minDatasetRange, maxDatasetRange):
         self.fPdfDict          = {}
+        self.tailRootFileName  = "" #NEW
+        self.tailHistName      = "" #NEW
         self.fOutPath          = fOutPath
         self.fFileOutName      = "{}/output__{}_{}.root".format(fOutPath, minDatasetRange, maxDatasetRange)
         self.fFileOut          = TFile(self.fFileOutName, "RECREATE")
@@ -32,11 +34,13 @@ class DQFitter:
     def GetFileOutName(self):
         return self.fFileOutNameNew
 
-    def SetFitConfig(self, pdfDict):
+    def SetFitConfig(self, pdfDict, tailRootFileName, tailHistName):
         '''
         Method set the configuration of the fit
         '''
         self.fPdfDict = pdfDict
+        self.tailRootFileName = tailRootFileName #name of root file used for fixed parameters in the fit (tail parameters)
+        self.tailHistName = tailHistName #name of histogram used for fixed parameters in the fit (tail parameters)
         # Exception to take into account the case in which AnalysisResults.root is used
         if "analysis-same-event-pairing/output" in self.fInputName:
             hlistIn = self.fFileIn.Get("analysis-same-event-pairing/output")
@@ -63,11 +67,31 @@ class DQFitter:
             if not self.fPdfDict["pdf"][i] == "SUM":
                 gROOT.ProcessLineSync(".x ../fit_library/{}Pdf.cxx+".format(self.fPdfDict["pdf"][i]))
         
+        fileTails = TFile(tailRootFileName, "READ")
+        hTails = fileTails.Get(tailHistName) #this histogram contains all tail parameters from the extraction: 1 and 2 are free, the tails come after
+
         for i in range(0, len(self.fPdfDict["pdf"])):
-            parVal = self.fPdfDict["parVal"][i]
-            parLimMin = self.fPdfDict["parLimMin"][i]
-            parLimMax = self.fPdfDict["parLimMax"][i]
+        
             parName = self.fPdfDict["parName"][i]
+            parVal = [0]*len(parName) #define an array for the parValues of the pdf
+            parLimMin = [0]*len(parName)
+            parLimMax = [0]*len(parName)
+
+            for j in range(0, len(parName)):
+                if not "@" in parName[j]: #if the parameter name does not contain @, then it is free and taken from the configuration file
+                    parVal[j]    = self.fPdfDict["parVal"][i][j]
+                    parLimMin[j] = self.fPdfDict["parLimMin"][i][j]
+                    parLimMax[j] = self.fPdfDict["parLimMax"][i][j]
+                    print(j, parVal[j], parLimMin[j], parLimMax[j])
+
+                else:  #if the parameter name contains @, then its value is taken from the root file and ixed (same value for max and min)
+                    binNumberRoot = hTails.GetXaxis().FindBin(parName[j].strip("@")) #remove @ from parameter name to correctly retrieve it from root file
+                    parVal[j]    = hTails.GetBinContent(binNumberRoot)
+                    parLimMin[j] = hTails.GetBinContent(binNumberRoot)
+                    parLimMax[j] = hTails.GetBinContent(binNumberRoot)
+                    print(j, parVal[j], parLimMin[j], parLimMax[j])
+
+                parName[j] = parName[j].strip("@") #remove @ from all parNames to avoid problems in the next parts of the code
 
             if not len(parVal) == len(parLimMin) == len(parLimMax) == len(parName):
                 print("WARNING! Different size if the input parameters in the configuration")
