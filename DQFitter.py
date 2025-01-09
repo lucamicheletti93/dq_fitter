@@ -1,4 +1,4 @@
-from telnetlib import DO
+#from telnetlib import DO
 import os
 import ROOT
 from ROOT import TCanvas, TFile, TH1F, TPaveText, RooRealVar, RooDataSet, RooWorkspace, RooDataHist, RooArgSet

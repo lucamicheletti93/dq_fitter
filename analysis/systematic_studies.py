@@ -39,11 +39,15 @@ def main():
         #varNames = ["sig_Jpsi", "sig_Psi2s"]
 
         #pathNamePt = "/Users/lucamicheletti/GITHUB/dq_fitter/analysis/LHC23_pass3_full/centrality_10_30/pt_dependence_narrow_bins"
-        pathNamePt = "/Users/lucamicheletti/GITHUB/dq_fitter/analysis/LHC22_pass7_skimmed/good_runs/pt_dependence"
+        #pathNamePt = "/Users/lucamicheletti/GITHUB/dq_fitter/analysis/LHC22_pass7_skimmed/good_runs/pt_dependence"
+        #pathNamePt = "/Users/lucamicheletti/GITHUB/dq_fitter/analysis/LHC24_pass1_skimmed/pt_dependence"
+        pathNamePt = "/Users/lucamicheletti/GITHUB/dq_fitter/analysis/LHC24_pass1_skimmed/pt_dependence_noBkg_data_tails"
         #ptMin = [0.0, 1.0, 2.0, 4.0, 5.0]
         #ptMax = [1.0, 2.0, 4.0, 5.0, 10.0]
         #ptMin = [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 8.0, 10.0, 12.0]
         #ptMax = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 8.0, 10.0, 12.0, 15.0]
+        #ptMin = [0.0, 0.5, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 10.0, 15.0]
+        #ptMax = [0.5, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 10.0, 15.0, 20.0]
         ptMin = [0.0, 0.5, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 10.0, 15.0]
         ptMax = [0.5, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 10.0, 15.0, 20.0]
         varNames = ["sig_Jpsi", "width_Jpsi", "mean_Jpsi", "ratio"]
