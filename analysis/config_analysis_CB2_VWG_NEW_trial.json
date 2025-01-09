@@ -4,8 +4,11 @@
       "input_name": [
         "Proj_PairsMuonSEPM_matchedMchMid__Pt_0.0_0.5"
       ],
-      "tailRootFileName":"/Users/mattei/LHC22_pass7_skimmed/MC_tail_extraction/pt_dependence/Pt_0.0_0.5/output__Proj_PairsMuonSEPM_MatchedMchMid_MC__Pt_0.0_0.5_CB2__2.5_3.5.root",
-      "tailHistName":"fit_results_CB2__2.5_3.5_Proj_PairsMuonSEPM_MatchedMchMid_MC__Pt_0.0_0.5",
+      "tailRootFileName":"file_tail_config_0.0_0.5.root",
+      "tailHistNames": [
+        "hParameters_data",
+        "hParameters_MC"
+      ],
       "pdf_dictionary": {
         "pdf": ["CB2", "CB2", "VWG", "SUM"],
         "pdfName": ["Jpsi", "Psi2s", "Bkg", "SUM"],
@@ -16,7 +19,7 @@
           [3.096, 0.75e-01, 0.980, 3.414, 2.070, 9.895],
           [3.68, 0.75e-01, 0.980, 3.414, 2.070, 9.895],
           [2.04, 0.36, 0.45],
-          [2761000, 45598, 6800000]
+          [80000, 1000, 500000]
         ],
         "parLimMin": [
           [2.90, 6.0e-02, 0.5, 3.0, 2.0, 9.0],
@@ -31,13 +34,13 @@
           [5000000, 5000000, 9500000]
         ],
         "parName": [
-          ["@mean_Jpsi@", "width_Jpsi", "@a_Jpsi@", "@b_Jpsi@", "@c_Jpsi@", "@d_Jpsi@"],
-          ["sum::mean_Psi2s(@mean_Jpsi@,0.584)", "prod::width_Psi2s(width_Jpsi,1.05)","@a_Jpsi@", "@b_Jpsi@", "@c_Jpsi@", "@d_Jpsi@"],
+          ["mean_Jpsi", "width_Jpsi", "@a_Jpsi@", "@b_Jpsi@", "@c_Jpsi@", "@d_Jpsi@"],
+          ["sum::mean_Psi2s(mean_Jpsi,0.584)", "prod::width_Psi2s(width_Jpsi,1.05)","@a_Jpsi@", "@b_Jpsi@", "@c_Jpsi@", "@d_Jpsi@"],
           ["aa", "bb", "cc"],
           ["sig_Jpsi", "sig_Psi2s", "bkg"]
         ],
-        "fitRangeMin": [2.1],
-        "fitRangeMax": [4.9],
+        "fitRangeMin": [2.1, 2.3],
+        "fitRangeMax": [4.9, 4.7],
         "rebin": 1,
         "fitMethod": "likelyhood",
         "doResidualPlot": true,
@@ -69,7 +72,7 @@
       }
     },
     "output": {
-      "output_file_name": "/Users/mattei/LHC24_pass7_skimmed/good_runs/NEW_FITTER_TRIAL/pt_dependence/Pt_0.0_0.5",
-      "output_merged_file_name": "multi_trial_CB2_Pol4Exp_MC_tails"
+      "output_file_name": "/Users/mattei/LHC24_pass7_skimmed/good_runs/NEW_FITTER_TRIAL_2/pt_dependence/Pt_0.0_0.5",
+      "output_merged_file_name": "multi_trial_CB2_VWG"
     }
   }
