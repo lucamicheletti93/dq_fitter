@@ -9,8 +9,8 @@ from utils.utils_library import ComputeSigToBkg, ComputeSignificance, ComputeAlp
 class DQFitter:
     def __init__(self, fInName, fInputName, fOutPath, minDatasetRange, maxDatasetRange):
         self.fPdfDict          = {}
-        self.tailRootFileName  = "" #NEW
-        self.tailHistName      = "" #NEW
+        self.tailRootFileName  = "" 
+        self.tailHistName      = "" 
         self.fOutPath          = fOutPath
         self.fFileOutName      = "{}/output__{}_{}.root".format(fOutPath, minDatasetRange, maxDatasetRange)
         self.fFileOut          = TFile(self.fFileOutName, "RECREATE")
