@@ -6,7 +6,7 @@ from ROOT import gPad, gROOT
 from utils.plot_library import DoResidualPlot, DoPullPlot, DoCorrMatPlot, DoAlicePlot, LoadStyle
 from utils.utils_library import ComputeSigToBkg, ComputeSignificance, ComputeAlpha
 
-class DQFitter_mod:
+class DQFitter:
     def __init__(self, fInName, fInputName, fOutPath, minDatasetRange, maxDatasetRange):
         self.fPdfDict          = {}
         self.tailRootFileName  = "" #NEW
