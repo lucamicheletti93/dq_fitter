@@ -34,7 +34,7 @@ def main():
         minFitRanges   = inputCfg["input"]["pdf_dictionary"]["fitRangeMin"]
         maxFitRanges   = inputCfg["input"]["pdf_dictionary"]["fitRangeMax"]
 
-        if "tailRootFileName" in inputCfg["input"] and "tailHistNames" in inputCfg["input"]: #NEW
+        if "tailRootFileName" in inputCfg["input"] and "tailHistNames" in inputCfg["input"]:
             tailRootFileName = inputCfg["input"]["tailRootFileName"] 
             tailHistNames = inputCfg["input"]["tailHistNames"] 
         #listOfOutputFileNames = [] # list of output file names
@@ -42,7 +42,7 @@ def main():
         if not path.isdir(outputFileName):
             os.system("mkdir -p %s" % (outputFileName))
         
-        if "tailRootFileName" in inputCfg["input"] and "tailHistNames" in inputCfg["input"]: #NEW
+        if "tailRootFileName" in inputCfg["input"] and "tailHistNames" in inputCfg["input"]:
             tailRootFileName = inputCfg["input"]["tailRootFileName"] 
             tailHistNames = inputCfg["input"]["tailHistNames"] 
             for histName in histNames:
@@ -53,7 +53,7 @@ def main():
                         with open(args.cfgFileName, 'r') as jsonCfgFile:
                             inputCfg = json.load(jsonCfgFile)
                         pdfDictionary  = inputCfg["input"]["pdf_dictionary"]
-                        print("PDF Dictionary content:", pdfDictionary) #mod
+                        print("PDF Dictionary content:", pdfDictionary)
                         print(inputFileName)
                         dqFitter = DQFitter(inputFileName, histName, outputFileName, minFitRange, maxFitRange)
                         print(inputCfg["input"]["pdf_dictionary"]["parName"])
@@ -85,7 +85,7 @@ def main():
                     with open(args.cfgFileName, 'r') as jsonCfgFile:
                         inputCfg = json.load(jsonCfgFile)
                     pdfDictionary  = inputCfg["input"]["pdf_dictionary"]
-                    print("PDF Dictionary content:", pdfDictionary) #mod
+                    print("PDF Dictionary content:", pdfDictionary)
                     tailRootFileName = inputCfg["input"].get("tailRootFileName", None)
                     tailHistName = inputCfg["input"].get("tailHistNames", [None])[0]
                     print(inputFileName)
