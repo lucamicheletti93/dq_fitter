@@ -39,8 +39,13 @@ class DQFitter:
         Method set the configuration of the fit
         '''
         self.fPdfDict = pdfDict
-        self.tailRootFileName = tailRootFileName #name of root file used for fixed parameters in the fit (tail parameters)
-        self.tailHistName = tailHistName #name of histogram used for fixed parameters in the fit (tail parameters)
+        if tailRootFileName is not None and tailHistName is not None:
+            self.tailFile = ROOT.TFile(tailRootFileName, "READ") #name of root file used for fixed parameters in the fit (tail parameters)
+            self.tailHist = self.tailFile.Get(tailHistName) #name of histogram used for fixed parameters in the fit (tail parameters)
+        else:
+            self.tailFile = None
+            self.tailHist = None
+
         # Exception to take into account the case in which AnalysisResults.root is used
         if "analysis-same-event-pairing/output" in self.fInputName:
             hlistIn = self.fFileIn.Get("analysis-same-event-pairing/output")
@@ -67,8 +72,9 @@ class DQFitter:
             if not self.fPdfDict["pdf"][i] == "SUM":
                 gROOT.ProcessLineSync(".x ../fit_library/{}Pdf.cxx+".format(self.fPdfDict["pdf"][i]))
         
-        fileTails = TFile(tailRootFileName, "READ")
-        hTails = fileTails.Get(tailHistName) #this histogram contains all tail parameters from the extraction: 1 and 2 are free, the tails come after
+        if tailRootFileName is not None and tailHistName is not None:
+            fileTails = TFile(tailRootFileName, "READ")
+            hTails = fileTails.Get(tailHistName) #this histogram contains all tail parameters from the extraction: 1 and 2 are free, the tails come after
 
         for i in range(0, len(self.fPdfDict["pdf"])):
         
@@ -137,6 +143,7 @@ class DQFitter:
                         nameFunc += ","
                 nameFunc += ")"
                 self.fRooWorkspace.factory(nameFunc)
+
 
     def CheckSignalTails(self, fitRangeMin, fitRangeMax):
         '''
