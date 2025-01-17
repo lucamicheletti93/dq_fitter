@@ -40,14 +40,17 @@ class DQFitter_mod:
         '''
         self.fPdfDict = pdfDict
         if tailRootFileName is not None and tailHistName is not None:
+
+            self.tailFile = ROOT.TFile(tailRootFileName, "READ") #name of root file used for fixed parameters in the fit (tail parameters)
+            self.tailHist = self.tailFile.Get(tailHistName) #name of histogram used for fixed parameters in the fit (tail parameters)
+
             self.tailFile = ROOT.TFile(tailRootFileName, "READ")
             self.tailHist = self.tailFile.Get(tailHistName)
+
         else:
             self.tailFile = None
             self.tailHist = None
 
-        """ self.tailRootFileName = tailRootFileName #name of root file used for fixed parameters in the fit (tail parameters)
-        self.tailHistName = tailHistName #name of histogram used for fixed parameters in the fit (tail parameters) """
         # Exception to take into account the case in which AnalysisResults.root is used
         if "analysis-same-event-pairing/output" in self.fInputName:
             hlistIn = self.fFileIn.Get("analysis-same-event-pairing/output")
