@@ -6,7 +6,7 @@ from ROOT import gPad, gROOT
 from utils.plot_library import DoResidualPlot, DoPullPlot, DoCorrMatPlot, DoAlicePlot, LoadStyle
 from utils.utils_library import ComputeSigToBkg, ComputeSignificance, ComputeAlpha
 
-class DQFitter:
+class DQFitter_mod:
     def __init__(self, fInName, fInputName, fOutPath, minDatasetRange, maxDatasetRange):
         self.fPdfDict          = {}
         self.tailRootFileName  = "" #NEW
@@ -40,8 +40,13 @@ class DQFitter:
         '''
         self.fPdfDict = pdfDict
         if tailRootFileName is not None and tailHistName is not None:
+
             self.tailFile = ROOT.TFile(tailRootFileName, "READ") #name of root file used for fixed parameters in the fit (tail parameters)
             self.tailHist = self.tailFile.Get(tailHistName) #name of histogram used for fixed parameters in the fit (tail parameters)
+
+            self.tailFile = ROOT.TFile(tailRootFileName, "READ")
+            self.tailHist = self.tailFile.Get(tailHistName)
+
         else:
             self.tailFile = None
             self.tailHist = None
