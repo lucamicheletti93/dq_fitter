@@ -45,7 +45,6 @@ def main():
             os.system("mkdir -p %s" % (outputFileName))
         
         if tailRootFileName is not None:
-            print("-------> Entering the first IF")
             tailRootFileName = inputCfg["input"]["tailRootFileName"] 
             tailHistNames = inputCfg["input"]["tailHistNames"] 
             for histName in histNames:
@@ -81,7 +80,6 @@ def main():
 
         #If "tailRootFileName": null, "tailHistNames": [null] in jsonCfgFile, the fit is peformed for one set of tails
         else:
-            print("-------> Entering the second IF")
             listOfOutputFileNames = [] # list of output file names
             for histName in histNames:
                 for minFitRange, maxFitRange in zip(minFitRanges, maxFitRanges):
