@@ -9,7 +9,7 @@ from os import path
 import ROOT
 from ROOT import TFile
 sys.path.append('../')
-from DQFitter import DQFitter
+from DQFitter_test import DQFitter
 sys.path.append('../utils')
 from utils_library import DoSystematics, CheckVariables
 
@@ -34,41 +34,83 @@ def main():
         minFitRanges   = inputCfg["input"]["pdf_dictionary"]["fitRangeMin"]
         maxFitRanges   = inputCfg["input"]["pdf_dictionary"]["fitRangeMax"]
 
-        tailRootFileName = inputCfg["input"]["tailRootFileName"] 
-        tailHistNames = inputCfg["input"]["tailHistNames"] 
+        if "tailRootFileName" in inputCfg["input"] and "tailHistNames" in inputCfg["input"]:
+            tailRootFileName = inputCfg["input"]["tailRootFileName"] 
+            tailHistNames = inputCfg["input"]["tailHistNames"] 
         #listOfOutputFileNames = [] # list of output file names
         
         if not path.isdir(outputFileName):
             os.system("mkdir -p %s" % (outputFileName))
-        for histName in histNames:
-            for tailHistName in tailHistNames: #looping over different histograms contaoining different sets of tail parameters
-                listOfOutputFileNames = [] # list of output file names
+        
+        if "tailRootFileName" in inputCfg["input"] and "tailHistNames" in inputCfg["input"]:
+            tailRootFileName = inputCfg["input"]["tailRootFileName"] 
+            tailHistNames = inputCfg["input"]["tailHistNames"] 
+            for histName in histNames:
+                for tailHistName in tailHistNames: #looping over different histograms contaoining different sets of tail parameters
+                    listOfOutputFileNames = [] # list of output file names
+                    for minFitRange, maxFitRange in zip(minFitRanges, maxFitRanges):
+                        # Reload configuration file
+                        with open(args.cfgFileName, 'r') as jsonCfgFile:
+                            inputCfg = json.load(jsonCfgFile)
+                        pdfDictionary  = inputCfg["input"]["pdf_dictionary"]
+                        print("PDF Dictionary content:", pdfDictionary)
+                        print(inputFileName)
+                        dqFitter = DQFitter(inputFileName, histName, outputFileName, minFitRange, maxFitRange)
+                        print(inputCfg["input"]["pdf_dictionary"]["parName"])
+                        dqFitter.SetFitConfig(pdfDictionary, tailRootFileName, tailHistName) #using each tail set at a time
+                        dqFitter.SingleFit()
+                        listOfOutputFileNames.append(dqFitter.GetFileOutName())
+                    
+                    #Creating a different merged file for each set of tails for a given histogram, containing the 3 fit types
+                    #if len(histNames) > 1 or len(minFitRanges) > 1:
+                    if len(minFitRanges) > 1: 
+                        if "MC" in tailHistName:
+                            mergedFileName_full = f'{outputFileName}/{mergedFileName}_MC_tails.root '
+                        else:
+                            mergedFileName_full = f'{outputFileName}/{mergedFileName}_data_tails.root '
+                        listOfOutputFileNamesToMerge = " ".join(listOfOutputFileNames)
+                        mergingCommand = mergedFileName_full + listOfOutputFileNamesToMerge
+                        print(mergingCommand)
+                        os.system(f'hadd -f {mergingCommand}') # -f option to overwrite merged file when rerunning the code
+                        # Delete unmerged files
+                        for listOfOutputFileName in listOfOutputFileNames:
+                            os.system(f'rm {listOfOutputFileName}')
+
+        #If "tailRootFileName": null, "tailHistNames": [null] in jsonCfgFile, the fit is peformed for one set of tails
+        else:
+            listOfOutputFileNames = [] # list of output file names
+            for histName in histNames:
                 for minFitRange, maxFitRange in zip(minFitRanges, maxFitRanges):
                     # Reload configuration file
                     with open(args.cfgFileName, 'r') as jsonCfgFile:
                         inputCfg = json.load(jsonCfgFile)
                     pdfDictionary  = inputCfg["input"]["pdf_dictionary"]
+                    print("PDF Dictionary content:", pdfDictionary)
+                    tailRootFileName = inputCfg["input"].get("tailRootFileName", None)
+                    tailHistName = inputCfg["input"].get("tailHistNames", [None])[0]
                     print(inputFileName)
                     dqFitter = DQFitter(inputFileName, histName, outputFileName, minFitRange, maxFitRange)
                     print(inputCfg["input"]["pdf_dictionary"]["parName"])
-                    dqFitter.SetFitConfig(pdfDictionary, tailRootFileName, tailHistName) #using each tail set at a time
+                    dqFitter.SetFitConfig(pdfDictionary, tailRootFileName, tailHistName)
                     dqFitter.SingleFit()
                     listOfOutputFileNames.append(dqFitter.GetFileOutName())
-                
-                #Creating a different merged file for each set of tails for a given histogram, containing the 3 fit types
-                #if len(histNames) > 1 or len(minFitRanges) > 1:
-                if len(minFitRanges) > 1: 
-                    if "MC" in tailHistName:
-                        mergedFileName_full = f'{outputFileName}/{mergedFileName}_MC_tails.root '
-                    else:
-                        mergedFileName_full = f'{outputFileName}/{mergedFileName}_data_tails.root '
-                    listOfOutputFileNamesToMerge = " ".join(listOfOutputFileNames)
-                    mergingCommand = mergedFileName_full + listOfOutputFileNamesToMerge
-                    print(mergingCommand)
-                    os.system(f'hadd -f {mergingCommand}') # -f option to overwrite merged file when rerunning the code
-                    # Delete unmerged files
-                    for listOfOutputFileName in listOfOutputFileNames:
-                        os.system(f'rm {listOfOutputFileName}')
+
+                    #Creating a different merged file for each set of tails for a given histogram, containing the 3 fit types
+                    #if len(histNames) > 1 or len(minFitRanges) > 1:
+                    if len(minFitRanges) > 1: 
+                        if "MC" in tailHistName:
+                            mergedFileName = f'{outputFileName}/{mergedFileName}_MC_tails.root '
+                        else:
+                            mergedFileName = f'{outputFileName}/{mergedFileName}_data_tails.root '
+                        listOfOutputFileNamesToMerge = " ".join(listOfOutputFileNames)
+                        mergingCommand = mergedFileName + listOfOutputFileNamesToMerge
+                        print(mergingCommand)
+                        os.system(f'hadd -f {mergingCommand}') # -f option to overwrite merged file when rerunning the code
+                        # Delete unmerged files
+                        for listOfOutputFileName in listOfOutputFileNames:
+                            os.system(f'rm {listOfOutputFileName}')
+            
+
 
 if __name__ == '__main__':
     main()
