@@ -4,7 +4,7 @@
       "input_name": [
         "Proj_PairsMuonSEPM_matchedMchMid__Pt_0.0_0.5"
       ],
-      "tailRootFileName":"file_tail_config_0.0_0.5.root",
+      "tailRootFileName":"../../file_tail_config_0.0_0.5.root",
       "tailHistNames": [
         "hParameters_data",
         "hParameters_MC"
