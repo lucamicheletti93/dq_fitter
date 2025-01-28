@@ -19,7 +19,7 @@ class DQFitter:
         self.fInput            = 0
         self.fRooWorkspace     = RooWorkspace('w','workspace')
         self.fParNames         = []
-        self.fFitMethod        = "likelyhood"
+        self.fFitMethod        = "chi2"
         self.fFitRangeMin      = minDatasetRange
         self.fFitRangeMax      = maxDatasetRange
         self.fTrialName        = ""
@@ -184,9 +184,9 @@ class DQFitter:
         if fitMethod == "likelyhood":
             print("########### Perform likelyhood fit ###########")
             rooFitRes = ROOT.RooFitResult(pdf.fitTo(rooDs, ROOT.RooFit.Range(fitRangeMin,fitRangeMax), ROOT.RooFit.Save()))
-        #if fitMethod == "chi2":
-            #print("########### Perform X2 fit ###########")
-            #rooFitRes = ROOT.RooFitResult(pdf.chi2FitTo(rooDs, ROOT.RooFit.Range(fitRangeMin,fitRangeMax),ROOT.RooFit.PrintLevel(-1), ROOT.RooFit.Save()))
+        if fitMethod == "chi2":
+            print("########### Perform X2 fit ###########")
+            rooFitRes = ROOT.RooFitResult(pdf.chi2FitTo(rooDs, ROOT.RooFit.Range(fitRangeMin,fitRangeMax),ROOT.RooFit.PrintLevel(-1), ROOT.RooFit.Save()))
 
         # Code to run sPlot
         if ("TTree" in self.fInput.ClassName()) and self.fPdfDict["sPlot"]["sRun"]:
@@ -216,8 +216,6 @@ class DQFitter:
             for iPar, sPar in enumerate(sPars):
                 histSw[iPar].Write(sPar + "_sw")
 
-        rooDs.plotOn(fRooPlot, ROOT.RooFit.MarkerStyle(20), ROOT.RooFit.MarkerSize(0.6), ROOT.RooFit.Range(fitRangeMin, fitRangeMax))
-        pdf.plotOn(fRooPlot, ROOT.RooFit.LineColor(ROOT.kRed+1), ROOT.RooFit.LineWidth(2), ROOT.RooFit.Range(fitRangeMin, fitRangeMax))
         rooDs.plotOn(fRooPlot, ROOT.RooFit.MarkerStyle(20), ROOT.RooFit.MarkerSize(0.6), ROOT.RooFit.Range(fitRangeMin, fitRangeMax))
         pdf.plotOn(fRooPlot, ROOT.RooFit.LineColor(ROOT.kRed+1), ROOT.RooFit.LineWidth(2), ROOT.RooFit.Range(fitRangeMin, fitRangeMax))
         for i in range(0, len(self.fPdfDict["pdf"])):
@@ -275,7 +273,7 @@ class DQFitter:
                 if "sig" in parName:
                     extraText.append("{} = {:.0f} #pm {:.0f}".format(text, self.fRooWorkspace.var(parName).getVal(), self.fRooWorkspace.var(parName).getError()))
                 else:
-                    extraText.append("{} = {:.3f} #pm {:.3f}".format(text, self.fRooWorkspace.var(parName).getVal(), self.fRooWorkspace.var(parName).getError()))
+                    extraText.append("{} = {:.4f} #pm {:.4f}".format(text, self.fRooWorkspace.var(parName).getVal(), self.fRooWorkspace.var(parName).getError()))
             for i in range(0, len(self.fPdfDict["pdfName"])):
                 if self.fPdfDict["pdfName"][i] in parName:
                     (paveText.GetListOfLines().Last()).SetTextColor(self.fPdfDict["pdfColor"][i])
