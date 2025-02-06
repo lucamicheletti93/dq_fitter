@@ -49,6 +49,8 @@
         "doAlicePlot": false,
         "cosmeticsForAlicePlot": {
           "logScale" : false,
+          "yRangeMin" : 100,
+          "yRangeMax" : 100,
           "extraTextSize" : 0.035,
           "extraTextSpacing" : 0.04,
           "extraTextPos" : [0.55, 0.47],

@@ -116,10 +116,12 @@ def DoAlicePlot(rooDs, pdf, rooPlot, pdfDict, histName, trialName, path, extraTe
     for i in range(0, len(pdfDict["pdf"])):
         if not pdfDict["pdfName"][i] == "SUM":
             pdf.plotOn(rooPlot, ROOT.RooFit.Components("{}Pdf".format(pdfDict["pdfName"][i])), ROOT.RooFit.Name(pdfDict["pdfNameForLegend"][i]), ROOT.RooFit.LineColor(pdfDict["pdfColor"][i]), ROOT.RooFit.LineStyle(pdfDict["pdfStyle"][i]), ROOT.RooFit.LineWidth(2))
+    yRangeMin = cosmetics["yRangeMin"]
+    yRangeMax = cosmetics["yRangeMax"]
     if cosmetics["logScale"]:
-        rooPlot.SetAxisRange(0.1, 1000 * rooPlot.GetMaximum(), "Y")
+        rooPlot.SetAxisRange(yRangeMin, yRangeMax * rooPlot.GetMaximum(), "Y")
     else:
-        rooPlot.SetAxisRange(0, 1.7 * rooPlot.GetMaximum(), "Y")
+        rooPlot.SetAxisRange(yRangeMin, yRangeMax * rooPlot.GetMaximum(), "Y")
 
     extraTextPos = cosmetics["extraTextPos"]
     legendPos = cosmetics["legendPos"]
