@@ -1,0 +1,7 @@
+---
+inputs:
+  fIn: "/Users/lucamicheletti/Downloads/output__hMassOS_Data_centmin1_centmax12_ptmin2_ptmax3_CB2_CB2_VWG__7.5_12.root"
+  invMass: "fit_plot_CB2_CB2_VWG__7.5_12_hMassOS_Data_centmin1_centmax12_ptmin2_ptmax3"
+  pull: "pull_plot_CB2_CB2_VWG__7.5_12"
+  pdfNames : ["sum_Norm[fMass]_Range", "Upsilon1sPdf", "Upsilon2sPdf", "BkgPdf"]
+  pdfLegendNames : ["Fit", "#varUpsilon(1S)", "#varUpsilon(2S)", "Background"]
