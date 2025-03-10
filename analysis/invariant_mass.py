@@ -14,120 +14,158 @@ sys.path.append('../utils')
 from plot_library import LoadStyle, SetGraStat, SetGraSyst, SetLegend
 
 ROOT.gROOT.ProcessLineSync(".x ../fit_library/VWGPdf.cxx+")
-#ROOT.gROOT.ProcessLineSync(".x ../fit_library/CB2Pdf.cxx+")
-ROOT.gROOT.ProcessLineSync(".x ../fit_library/Pol4ExpPdf.cxx+")
+ROOT.gROOT.ProcessLineSync(".x ../fit_library/CB2Pdf.cxx+")
 
-def main():
+def pull_plot(inputCfg):
     LoadStyle()
     ROOT.gStyle.SetOptStat(0)
     ROOT.gStyle.SetHatchesSpacing(0.3)
     #gStyle.SetHatchesLineWidth(2)
 
-    letexTitle = ROOT.TLatex()
-    letexTitle.SetTextSize(0.042)
-    letexTitle.SetNDC()
-    letexTitle.SetTextFont(42)
+    fIn = ROOT.TFile(inputCfg["inputs"]["fIn"], "READ")
+    canvasInvMass = fIn.Get(inputCfg["inputs"]["invMass"])
+    canvasPull = fIn.Get(inputCfg["inputs"]["pull"])
+    listOfPrimsInvMass = canvasInvMass.GetListOfPrimitives()
+    listOfPrimsPull = canvasPull.GetListOfPrimitives()
 
-    varMin = "0"
-    varMax = "90"
-    #path = "/Users/lucamicheletti/GITHUB/dq_fitter/analysis/LHC23zzh_pass2"
-    path = "/Users/lucamicheletti/GITHUB/dq_fitter/analysis/LHC23_pass3_full"
+    #print(list(listOfPrimsInvMass))
+    #print(list(listOfPrimsPull))
 
-    if varMin == "0" and varMax == "90":
-        histName = "hist_mass_all_histo_PairsMuonSEPM_matchedMchMid"
-    else:
-        histName = "hist_mass_pt_all_histo_PairsMuonSEPM_muonLowPt210SigmaPDCA_FT0C_" + varMin + "_" + varMax
-    #fInName = "CB2_VWG__2.5_4.5"
-    fInName = "fit_plot_CB2_CB2_Pol4Exp__2.6_4.0_int"
-    
-    #print("{}/{}__{}.root".format(path, histName, fInName))
-    print("{}/{}.root".format(path, fInName))
+    xMin = inputCfg["inputs"]["xMin"]
+    xMax = inputCfg["inputs"]["xMax"]
+    yMin = inputCfg["inputs"]["yMin"]
+    yMax = inputCfg["inputs"]["yMax"]
 
-    #fIn = ROOT.TFile("{}/{}__{}.root".format(path, histName, fInName), "READ")
-    fIn = ROOT.TFile("{}/{}.root".format(path, fInName), "READ")
-    #canvasIn = fIn.Get("fit_plot_{}".format(fInName))
-    canvasIn = fIn.Get("fit_plot_CB2_CB2_Pol4Exp__2.6_4.0_histBkgSubtrSEPM_Pt210_Int")
-    listOfPrimitives = canvasIn.GetListOfPrimitives()
-
-    print(list(listOfPrimitives))
-    
-    # Frame
-    #frame = listOfPrimitives.At(0)
-    #frame.GetXaxis().SetRangeUser(2.6, 4.2)
-    #if varMin == "0" and varMax == "20":
-        #frame.GetYaxis().SetRangeUser(1e3, 3e6)
-    #else:
-        #frame.GetYaxis().SetRangeUser(1e2, 1e5)
-    #frame.SetTitle(" ")
-    #frame.GetXaxis().SetTitle("#it{m}_{#mu#mu} (GeV/#it{c}^{2})")
-    #frame.GetYaxis().SetTitle("Counts per 20 MeV/#it{c}^{2}")
-
-    frame1 = ROOT.TH2D("histGrid1", "", 100, 2.6, 4, 100, 500, 1e7)
-    frame2 = ROOT.TH2D("histGrid2", "", 100, 2.6, 4, 100, 5e2, 1e6)
+    frame1 = ROOT.TH2D("histGrid1", "", 100, xMin, xMax, 100, yMin, yMax)
+    frame2 = ROOT.TH2D("histGrid2", "", 100, xMin, xMax, 100, -5, 5)
+    frame2.GetXaxis().SetLabelSize(0.15)
+    frame2.GetYaxis().SetLabelSize(0.15)
+    frame2.GetYaxis().SetNdivisions(5)
+    frame2.GetXaxis().SetTitleSize(0.15)
+    frame2.GetXaxis().SetTitleOffset(0.85)
 
     # Histograms
-    histData = listOfPrimitives.At(4)
+    histData = listOfPrimsInvMass.At(1)
     histData.SetMarkerStyle(20)
     histData.SetMarkerColor(ROOT.kBlack)
 
+    histPull = listOfPrimsPull.At(1)
+    histPull.SetMarkerStyle(20)
+    histPull.SetMarkerColor(ROOT.kBlack)
+
+    for i in range(histPull.GetN()):
+        histPull.SetPointEXlow(i, 0)
+        histPull.SetPointEXhigh(i, 0)
+        histPull.SetPointEYlow(i, 0)
+        histPull.SetPointEYhigh(i, 0)
+
+
     # PDFs
-    pdfSum = listOfPrimitives.At(5)
-    pdfJpsi = listOfPrimitives.At(6)
-    pdfPsi2s = listOfPrimitives.At(7)
-    pdfBkg = listOfPrimitives.At(8)
+    pdfNames = inputCfg["inputs"]["pdfNames"]
+    pdfLegendNames = inputCfg["inputs"]["pdfLegendNames"]
+    pdfs = []
+    index = 0
+
+    for pdfName in pdfNames:
+        for i, listOfPrimInvMass in enumerate(listOfPrimsInvMass):
+            if pdfName in listOfPrimInvMass.GetName():
+                index = i
+        pdfs.append(listOfPrimsInvMass.At(index))
+        index = 0
 
     canvasOut = TCanvas("canvasOut", "canvasOut", 800, 800)
-    canvasOut.SetTickx(1)
-    canvasOut.SetTicky(1)
+
+    canvasOut.cd()
+    pad1 = ROOT.TPad("pad1", "pad1", 0.005, 0.3, 0.995, 0.95)
+    pad1.SetBottomMargin(0.01)
+    pad1.SetTopMargin(0.05)
+    pad1.Draw()
+    pad1.cd()
+    #canvasOut.SetTickx(1)
+    #canvasOut.SetTicky(1)
     ROOT.gPad.SetLogy(1)
     frame1.Draw()
-    histData.Draw("EP SAME")
-    pdfBkg.Draw("SAME")
-    pdfSum.Draw("SAME")
-    pdfJpsi.Draw("SAME")
-    pdfPsi2s.Draw("SAME")
-    
+    histData.Draw("EP")
+    for pdf in pdfs:
+        pdf.Draw("SAME")
 
-    legend = TLegend(0.65, 0.47, 0.82, 0.82, " ", "brNDC")
+    legend = TLegend(0.75, 0.52, 0.92, 0.87, " ", "brNDC")
     SetLegend(legend)
     legend.SetTextSize(0.04)
     legend.AddEntry(histData,"Data", "P")
-    legend.AddEntry(pdfSum,"Fit", "L")
-    legend.AddEntry(pdfJpsi,"J/#psi", "L")
-    legend.AddEntry(pdfPsi2s,"#psi(2S)", "L")
-    legend.AddEntry(pdfBkg,"Background", "L")
+    for i, pdfLegendName in enumerate(pdfLegendNames):
+        legend.AddEntry(pdfs[i], pdfLegendName, "L")
     legend.Draw()
 
-    letexTitle.DrawLatex(0.18, 0.88, "ALICE Performance, Pb#minusPb, #sqrt{#it{s}_{NN}} = 5.36 TeV")
-    letexTitle.DrawLatex(0.18, 0.81, "Inclusive J/#psi #rightarrow #mu^{+}#mu^{-}, 2.5 < #it{y} < 4, " + varMin + "#minus" + varMax + "%")
-
+    letexTitle = ROOT.TLatex()
+    letexTitle.SetTextSize(0.055)
+    letexTitle.SetNDC()
+    letexTitle.SetTextFont(42)
+    letexTitle.DrawLatex(0.18, 0.88, "ALICE, Pb-Pb, #sqrt{#it{s}_{NN}} = 5.36 TeV")
+    letexTitle.DrawLatex(0.18, 0.81, "Inclusive #varUpsilon(nS) #rightarrow #mu^{+}#mu^{-}, 2.5 < #it{y} < 4")
 
     canvasOut.cd()
-    pad = ROOT.TPad("pad1", "pad1", 0.6, 0.6, 0.85, 0.85)
-    pad.Draw()
-    pad.cd()
+    pad2 = ROOT.TPad("pad2", "pad2", 0.005, 0.1, 0.995, 0.30)
+    pad2.SetBottomMargin(0.12)
+    pad2.SetTopMargin(0.07)
+    pad2.Draw()
+    pad2.cd()
     frame2.Draw()
-    ROOT.gPad.SetLogy(True)
-    histData.Draw("EP SAME")
-    pdfBkg.Draw("SAME")
-    pdfSum.Draw("SAME")
-    pdfJpsi.Draw("SAME")
-    pdfPsi2s.Draw("SAME")
+    histPull.Draw("P")
+
+    lineZero = ROOT.TLine(xMin, 0, xMax, 0)
+    lineZero.Draw()
+
+    line2SigmaUp = ROOT.TLine(xMin, 2, xMax, 2)
+    line2SigmaUp.SetLineStyle(ROOT.kDashed)
+    line2SigmaUp.Draw()
+    
+    line2SigmaDown = ROOT.TLine(xMin, -2, xMax, -2)
+    line2SigmaDown.SetLineStyle(ROOT.kDashed)
+    line2SigmaDown.Draw()
+
+    canvasOut.cd()
+
+    letexY1Axis = ROOT.TLatex()
+    letexY1Axis.SetTextAngle(90)
+    letexY1Axis.SetTextSize(0.035)
+    letexY1Axis.SetNDC()
+    letexY1Axis.SetTextFont(42)
+    letexY1Axis.DrawLatex(0.05, 0.60, "dN/d#it{M} (GeV/#it{c}^{2})")
+
+    letexY2Axis = ROOT.TLatex()
+    letexY2Axis.SetTextAngle(90)
+    letexY2Axis.SetTextSize(0.035)
+    letexY2Axis.SetNDC()
+    letexY2Axis.SetTextFont(42)
+    letexY2Axis.DrawLatex(0.05, 0.20, "Pull")
+
+    letexX2Axis = ROOT.TLatex()
+    letexX2Axis.SetTextSize(0.035)
+    letexX2Axis.SetNDC()
+    letexX2Axis.SetTextFont(42)
+    letexX2Axis.DrawLatex(0.80, 0.05, "#it{M} (GeV/#it{c}^{2})")
 
     canvasOut.Update()
 
     input()
-    canvasOut.SaveAs("figures/invariantMass_pt_" + varMin + "_" + varMax + ".pdf")
 
-    fOut = ROOT.TFile("performance_plot_psi2S.root", "RECREATE")
-    fOut.cd()
-    canvasOut.Write("canvas")
-    histData.Write("histData")
-    pdfBkg.Write("pdfBkg")
-    pdfSum.Write("pdfSum")
-    pdfJpsi.Write("pdfJpsi")
-    pdfPsi2s.Write("pdfPsi2s")
-    fOut.Close()
+    canvasOut.SaveAs(inputCfg["outputs"]["pdfOut"])
+
+def main():
+    print('start')
+    parser = argparse.ArgumentParser(description='Arguments to pass')
+    parser.add_argument('cfgFileName', metavar='text', default='config.yml', help='config file name')
+    parser.add_argument("--do_pull_plot", help="run the single fit", action="store_true")
+    args = parser.parse_args()
+    print(args)
+    print('Loading task configuration: ...', end='\r')
+    with open(args.cfgFileName, 'r') as ymlCfgFile:
+        inputCfg = yaml.load(ymlCfgFile, yaml.FullLoader)
+    print('Loading task configuration: Done!')
+    
+    if args.do_pull_plot:
+        pull_plot(inputCfg)
 
 if __name__ == '__main__':
     main()

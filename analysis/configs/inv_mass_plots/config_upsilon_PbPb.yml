@@ -5,3 +5,10 @@ inputs:
   pull: "pull_plot_CB2_CB2_VWG__7.5_12"
   pdfNames : ["sum_Norm[fMass]_Range", "Upsilon1sPdf", "Upsilon2sPdf", "BkgPdf"]
   pdfLegendNames : ["Fit", "#varUpsilon(1S)", "#varUpsilon(2S)", "Background"]
+  xMin: 8.0
+  xMax: 12.0
+  yMin: 2.0
+  yMax: 10000
+
+outputs:
+  pdfOut: inv_mass_Upsilon.pdf
