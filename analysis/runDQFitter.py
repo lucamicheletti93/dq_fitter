@@ -33,6 +33,7 @@ def main():
         histNames      = inputCfg["input"]["input_name"]
         minFitRanges   = inputCfg["input"]["pdf_dictionary"]["fitRangeMin"]
         maxFitRanges   = inputCfg["input"]["pdf_dictionary"]["fitRangeMax"]
+        fitMethod      = inputCfg["input"]["fitMethod"]
 
         if "tailRootFileName" in inputCfg["input"] and "tailHistNames" in inputCfg["input"]:
             tailRootFileName = inputCfg["input"]["tailRootFileName"] 
@@ -57,7 +58,7 @@ def main():
                         pdfDictionary  = inputCfg["input"]["pdf_dictionary"]
                         print("PDF Dictionary content:", pdfDictionary)
                         print(inputFileName)
-                        dqFitter = DQFitter(inputFileName, histName, outputFileName, minFitRange, maxFitRange)
+                        dqFitter = DQFitter(inputFileName, histName, outputFileName, minFitRange, maxFitRange, fitMethod)
                         print(inputCfg["input"]["pdf_dictionary"]["parName"])
                         dqFitter.SetFitConfig(pdfDictionary, tailRootFileName, tailHistName) #using each tail set at a time
                         dqFitter.SingleFit()
@@ -88,7 +89,7 @@ def main():
                         inputCfg = json.load(jsonCfgFile)
                     pdfDictionary  = inputCfg["input"]["pdf_dictionary"]
                     print(inputFileName)
-                    dqFitter = DQFitter(inputFileName, histName, outputFileName, minFitRange, maxFitRange)
+                    dqFitter = DQFitter(inputFileName, histName, outputFileName, minFitRange, maxFitRange, fitMethod)
                     print(inputCfg["input"]["pdf_dictionary"]["parName"])
                     dqFitter.SetFitConfig(pdfDictionary, tailRootFileName, None)
                     dqFitter.SingleFit()

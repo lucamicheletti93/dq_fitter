@@ -7,7 +7,7 @@ from utils.plot_library import DoResidualPlot, DoPullPlot, DoCorrMatPlot, DoAlic
 from utils.utils_library import ComputeSigToBkg, ComputeSignificance, ComputeAlpha
 
 class DQFitter:
-    def __init__(self, fInName, fInputName, fOutPath, minDatasetRange, maxDatasetRange):
+    def __init__(self, fInName, fInputName, fOutPath, minDatasetRange, maxDatasetRange, fitMethod):
         self.fPdfDict          = {}
         self.tailRootFileName  = "" 
         self.tailHistName      = "" 
@@ -19,7 +19,7 @@ class DQFitter:
         self.fInput            = 0
         self.fRooWorkspace     = RooWorkspace('w','workspace')
         self.fParNames         = []
-        self.fFitMethod        = "chi2"
+        self.fFitMethod        = fitMethod
         self.fFitRangeMin      = minDatasetRange
         self.fFitRangeMax      = maxDatasetRange
         self.fTrialName        = ""
