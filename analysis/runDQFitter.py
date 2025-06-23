@@ -33,7 +33,7 @@ def main():
         histNames      = inputCfg["input"]["input_name"]
         minFitRanges   = inputCfg["input"]["pdf_dictionary"]["fitRangeMin"]
         maxFitRanges   = inputCfg["input"]["pdf_dictionary"]["fitRangeMax"]
-        fitMethod      = inputCfg["input"]["fitMethod"]
+        fitMethod      = inputCfg["input"]["pdf_dictionary"]["fitMethod"]
 
         if "tailRootFileName" in inputCfg["input"] and "tailHistNames" in inputCfg["input"]:
             tailRootFileName = inputCfg["input"]["tailRootFileName"] 
