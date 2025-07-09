@@ -1,11 +1,13 @@
 {
   "input": {
-    "input_file_name":"/Users/lucamicheletti/Downloads/Histograms_Fullpass4PbPbQualitymatchedMchMid_withpt07_CentBins_withMixing_10_80.root",
+    "input_file_name":"/Users/garetti/cernbox_all/analysis/JPsi_Psi2S_ratio/data/pp_ref_2024/mergedHistograms_pp_ref.root",
     "input_name": [
-      "histMassSEPM_1.5_2.0__10_30"
+      "Mass_Int_SEPM"
     ],
-    "tailRootFileName": "*** path to the file ***",
-    "tailHistNames": ["*** histogram name ***"],
+    "tailRootFileName":"/Users/garetti/dq_fitter_lastV/analysis/files/bkg_modulation_pp2024MB.root",
+    "tailHistNames": [
+      "hResults_24MB_Pt_0.0_0.5"
+    ],
     "pdf_dictionary": {
       "pdf": ["CB2", "RatioVWG", "SUM"],
       "pdfName": ["Jpsi", "Bkg", "SUM"],
@@ -39,11 +41,11 @@
       "doResidualPlot": true,
       "doPullPlot": true, 
       "doCorrMatPlot": false,
-      "doAlicePlot": false,
+      "doAlicePlot": true,
       "cosmeticsForAlicePlot": {
         "logScale" : false,
-        "yRangeMin" : 100,
-        "yRangeMax" : 100,
+        "yRangeMin" : 1,
+        "yRangeMax" : 1,
         "extraTextSize" : 0.035,
         "extraTextSpacing" : 0.04,
         "extraTextPos" : [0.55, 0.47],
@@ -67,7 +69,7 @@
     }
   },
   "output": {
-    "output_file_name": "/Users/lucamicheletti/GITHUB/dq_fitter/analysis/LHC23_pass4_full/centrality_10_30/pt_dependence_narrow_bins_bkg_param/Pt_1.5_2.0",
-    "output_merged_file_name": "multi_trial_CB2_RatioVWG"
+    "output_file_name": "/Users/garetti/dq_fitter_tails/analysis/muonLowPt210SigmaPDCA/pp_ref/output/Int",
+    "output_merged_file_name": "multi_trial_CB2_VWG_1.05_width"
   }
 }

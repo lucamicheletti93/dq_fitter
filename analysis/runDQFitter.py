@@ -34,6 +34,10 @@ def main():
         minFitRanges   = inputCfg["input"]["pdf_dictionary"]["fitRangeMin"]
         maxFitRanges   = inputCfg["input"]["pdf_dictionary"]["fitRangeMax"]
         fitMethod      = inputCfg["input"]["pdf_dictionary"]["fitMethod"]
+        mean   = inputCfg["input"]["pdf_dictionary"]["mean_Psi2s"]
+        width   = inputCfg["input"]["pdf_dictionary"]["width_Psi2s"]
+        ME_norm   = inputCfg["input"]["pdf_dictionary"]["ME_norm"]
+        dataset   = inputCfg["input"]["pdf_dictionary"]["dataset"]
 
         if "tailRootFileName" in inputCfg["input"] and "tailHistNames" in inputCfg["input"]:
             tailRootFileName = inputCfg["input"]["tailRootFileName"] 
@@ -58,10 +62,10 @@ def main():
                         pdfDictionary  = inputCfg["input"]["pdf_dictionary"]
                         print("PDF Dictionary content:", pdfDictionary)
                         print(inputFileName)
-                        dqFitter = DQFitter(inputFileName, histName, outputFileName, minFitRange, maxFitRange, fitMethod)
+                        dqFitter = DQFitter(inputFileName, histName, outputFileName, minFitRange, maxFitRange, mean, width, ME_norm, dataset, tailHistName)
                         print(inputCfg["input"]["pdf_dictionary"]["parName"])
                         dqFitter.SetFitConfig(pdfDictionary, tailRootFileName, tailHistName) #using each tail set at a time
-                        dqFitter.SingleFit()
+                        dqFitter.SingleFit(tailRootFileName, tailHistName)
                         listOfOutputFileNames.append(dqFitter.GetFileOutName())
                     
                     #Creating a different merged file for each set of tails for a given histogram, containing the 3 fit types
@@ -69,8 +73,10 @@ def main():
                     if len(minFitRanges) > 1: 
                         if "MC" in tailHistName:
                             mergedFileName_full = f'{outputFileName}/{mergedFileName}_MC_tails.root '
-                        else:
+                        if "data" in tailHistName:
                             mergedFileName_full = f'{outputFileName}/{mergedFileName}_data_tails.root '
+                        else:
+                            mergedFileName_full = f'{outputFileName}/{mergedFileName}_free_tails.root '
                         listOfOutputFileNamesToMerge = " ".join(listOfOutputFileNames)
                         mergingCommand = mergedFileName_full + listOfOutputFileNamesToMerge
                         print(mergingCommand)
@@ -89,10 +95,11 @@ def main():
                         inputCfg = json.load(jsonCfgFile)
                     pdfDictionary  = inputCfg["input"]["pdf_dictionary"]
                     print(inputFileName)
-                    dqFitter = DQFitter(inputFileName, histName, outputFileName, minFitRange, maxFitRange, fitMethod)
+                    dqFitter = DQFitter(inputFileName, histName, outputFileName, minFitRange, maxFitRange, mean, width, ME_norm, dataset, tailHistName)
+                    #dqFitter = DQFitter(inputFileName, histName, outputFileName, minFitRange, maxFitRange, fitMethod)
                     print(inputCfg["input"]["pdf_dictionary"]["parName"])
                     dqFitter.SetFitConfig(pdfDictionary, tailRootFileName, None)
-                    dqFitter.SingleFit()
+                    dqFitter.SingleFit(tailRootFileName, tailHistName)
                     listOfOutputFileNames.append(dqFitter.GetFileOutName())
             if len(histNames) > 1 or len(minFitRanges) > 1:
                 mergedFileName = f'{outputFileName}/{mergedFileName}.root '

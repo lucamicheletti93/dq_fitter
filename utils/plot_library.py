@@ -83,24 +83,32 @@ def DrawRatioPlot(hist1, hist2, dirName, plotName):
     canvas.SaveAs("%s/ratio_%s.pdf" % dirName.Data(), plotName.Data())
 
 
-def DoResidualPlot(rooPlot, rooVar, trialName):
+def DoResidualPlot(rooPlot, rooVar, histName, path, trialName):
     rooHistResidual = rooPlot.residHist()
     rooPlotResidual = rooVar.frame(ROOT.RooFit.Title("Residual Distribution"))
     rooPlotResidual.addPlotable(rooHistResidual,"P")
-    canvasResidual = TCanvas("residual_plot_{}".format(trialName), "resisual_plot_{}".format(trialName), 600, 600)
+    canvasResidual = TCanvas("residual_plot_{}_{}".format(histName, trialName), "resisual_plot_{}_{}".format(histName, trialName), 600, 600)
     canvasResidual.SetLeftMargin(0.15)
     rooPlotResidual.GetYaxis().SetTitleOffset(1.4)
     rooPlotResidual.Draw()
+    canvasResidual.Update()
+    """ if not os.path.isdir(path):
+        os.system("mkdir -p %s" % (path))
+    canvasResidual.SaveAs("{}/residual_plot_{}_{}.pdf".format(path, histName, trialName)) """
     return canvasResidual
 
-def DoPullPlot(rooPlot, rooVar, trialName):
+def DoPullPlot(rooPlot, rooVar, histName, path, trialName):
     rooHistPull = rooPlot.pullHist()
     rooPlotPull = rooVar.frame(ROOT.RooFit.Title("Pull Distribution"))
     rooPlotPull.addPlotable(rooHistPull,"P")
-    canvasPull = TCanvas("pull_plot_{}".format(trialName), "pull_plot_{}".format(trialName), 600, 600)
+    canvasPull = TCanvas("pull_plot_{}_{}".format(histName, trialName), "pull_plot_{}_{}".format(histName, trialName), 600, 600)
     canvasPull.SetLeftMargin(0.15)
     rooPlotPull.GetYaxis().SetTitleOffset(1.4)
     rooPlotPull.Draw()
+    canvasPull.Update()
+    """ if not os.path.isdir(path):
+        os.system("mkdir -p %s" % (path))
+    canvasPull.SaveAs("{}/pull_plot_{}_{}.pdf".format(path, histName, trialName)) """
     return canvasPull
 
 def DoCorrMatPlot(rooFitRes, trialName):
