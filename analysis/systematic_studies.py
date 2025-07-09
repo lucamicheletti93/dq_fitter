@@ -36,12 +36,12 @@ def do_systematics(inputCfg):
         with open(f"{pathNamePt}/systematic_{varName}.txt", 'w') as fOut:
             fOut.write("x_min x_max val stat syst \n")
             for iPt in range(len(ptMin)):
-                outdir = f"{pathNamePt}/Pt_{ptMin[iPt]:.1f}_{ptMax[iPt]:.1f}_testGithub/systematics"
+                outdir = f"{pathNamePt}/Pt_{ptMin[iPt]:.1f}_{ptMax[iPt]:.1f}/systematics"
                 print(f"Creating directory (if not exists): {outdir}")
                 if not os.path.exists(outdir):
                     os.makedirs(outdir)
 
-                DoSystematics(f"{pathNamePt}/Pt_{ptMin[iPt]:.1f}_{ptMax[iPt]:.1f}_testGithub", fileNames, varName, iPt, fOut)
+                DoSystematics(f"{pathNamePt}/Pt_{ptMin[iPt]:.1f}_{ptMax[iPt]:.1f}", fileNames, varName, iPt, fOut)
 
 def main():
     print('start')

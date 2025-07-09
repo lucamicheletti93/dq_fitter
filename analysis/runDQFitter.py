@@ -62,7 +62,7 @@ def main():
                         pdfDictionary  = inputCfg["input"]["pdf_dictionary"]
                         print("PDF Dictionary content:", pdfDictionary)
                         print(inputFileName)
-                        dqFitter = DQFitter(inputFileName, histName, outputFileName, minFitRange, maxFitRange, mean, width, ME_norm, dataset, tailHistName)
+                        dqFitter = DQFitter(inputFileName, histName, outputFileName, minFitRange, maxFitRange, mean, width, ME_norm, dataset, tailHistName, fitMethod)
                         print(inputCfg["input"]["pdf_dictionary"]["parName"])
                         dqFitter.SetFitConfig(pdfDictionary, tailRootFileName, tailHistName) #using each tail set at a time
                         dqFitter.SingleFit(tailRootFileName, tailHistName)
@@ -95,7 +95,7 @@ def main():
                         inputCfg = json.load(jsonCfgFile)
                     pdfDictionary  = inputCfg["input"]["pdf_dictionary"]
                     print(inputFileName)
-                    dqFitter = DQFitter(inputFileName, histName, outputFileName, minFitRange, maxFitRange, mean, width, ME_norm, dataset, tailHistName)
+                    dqFitter = DQFitter(inputFileName, histName, outputFileName, minFitRange, maxFitRange, mean, width, ME_norm, dataset, tailHistName, fitMethod)
                     #dqFitter = DQFitter(inputFileName, histName, outputFileName, minFitRange, maxFitRange, fitMethod)
                     print(inputCfg["input"]["pdf_dictionary"]["parName"])
                     dqFitter.SetFitConfig(pdfDictionary, tailRootFileName, None)
