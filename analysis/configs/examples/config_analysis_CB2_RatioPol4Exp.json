@@ -1,0 +1,86 @@
+{
+  "input": {
+    "input_file_name":"/Users/garetti/cernbox_all/analysis/JPsi_Psi2S_ratio/data/pp_ref_2024/mergedHistograms_pp_ref.root",
+    "input_name": [
+      "Mass_Int_Pt_6_12_SEPM"
+    ],
+    "tailRootFileName":"/Users/garetti/dq_fitter_lastV/analysis/files/bkg_modulation_pp2023MB.root",
+    "tailHistNames": [
+      "hResults_23MB_Pt_5.0_6.0"
+    ],
+      "pdf_dictionary": {
+        "pdf": ["CB2", "CB2", "RatioPol4Exp", "SUM"],
+        "pdfName": ["Jpsi", "Psi2s", "Bkg", "SUM"],
+        "pdfColor": [861, 417, 1],
+        "pdfNameForLegend": ["J/#psi", "#psi(2S)","Background", "Fit"],
+        "pdfStyle": [1, 1, 2],
+        "parVal": [
+          [3.096, 0.937e-01, 1.3489, 1.7826, 2.4077, 3.2354],
+          [3.68, 0.937e-01, 1.3489, 1.7826, 2.4077, 3.2354],
+          [1.76758, 1.10054, 1.77934, -0.702201, 1.04474, 9.6e3, -2329.5, -86, 1e2, -10, 2.1],
+          [3.2e4, 1.1e3, 1.3e4]
+          ],
+          "parLimMin": [
+          [2.98, 6.0e-02, 0.9, 1.0, 1.5, 1.0],
+          [3.2, 6.0e-02, 0.9, 1.0, 1.5, 1.0],
+          [1.76758, 1.10054, 1.77934, -0.702201, 1.04474, -1e6, -8e4, -1e3, -1e4, -1e2, -10],
+          [1000, 100, 10]
+          ],
+          "parLimMax": [
+          [3.20, 1.5e-01, 1.9, 2.2, 3.0, 10.0],
+          [3.90, 1.5e-01, 1.9, 2.2, 3.0, 10.0],
+          [1.76758, 1.10054, 1.77934, -0.702201, 1.04474, 1e5, 8e4, 1e3, 1e3, 10, 10],
+          [5e10, 5e10, 1e10]          
+        ],
+        "parName": [
+          ["mean_Jpsi", "width_Jpsi", "a_Jpsi", "b_Jpsi", "c_Jpsi", "d_Jpsi"],
+          ["sum::mean_Psi2s(mean_Jpsi,0.584)", "prod::width_Psi2s(width_Jpsi,1.1)", "a_Jpsi", "b_Jpsi", "c_Jpsi", "d_Jpsi"],
+          ["@aa@", "@bb@", "@cc@","@dd@", "@ee@", "ff", "gg", "hh", "ii", "ll", "mm"],
+          ["sig_Jpsi", "sig_Psi2s", "bkg"]
+        ],
+        "fitRangeMin": [2.2,2.3,2.4],
+        "fitRangeMax": [4.8,4.7,4.6],
+        "rebin": 1,
+        "mean_Psi2s": 0.584,
+        "width_Psi2s": 1.05,
+        "ME_norm": "2_8",
+        "fitMethod": "chi2",
+        "dataset": "pp",
+        "doResidualPlot": true,
+        "doPullPlot": true, 
+        "doCorrMatPlot": false,
+        "doAlicePlot": true,
+        "doResidualPlotPdf": true,
+        "doPullPlotPdf": true,
+        "cosmeticsForAlicePlot": {
+          "logScale" : true,
+          "yRangeMin" : 10,
+          "yRangeMax" : 100,
+          "extraTextSize" : 0.027,
+          "extraTextSpacing" : 0.045,
+          "extraTextPos" : [0.75, 0.84],
+          "legendPos" : [0.54, 0.60, 0.74, 0.89]
+        },
+        "sPlot": {
+          "sRun" : false,
+          "sVar" : "fCos2DeltaPhi",
+          "sVarName" : "cos(2#Delta#phi)",
+          "sRangeMin" : -1,
+          "sRangeMax" : 1,
+          "sBins" : 20,
+          "sPars" : ["sig_Upsilon1s", "bkg"]
+        },
+        "parForAlicePlot": ["mean_Jpsi", "width_Jpsi", "sig_Jpsi", "mean_Psi2s", "sig_Psi2s", "width_Psi2s", "sOverB_Jpsi", "sgnf_Jpsi", "sOverB_Psi2s", "sgnf_Psi2s", "corrMatrStatus"],
+        "parNameForAlicePlot": ["#mu_{J/#psi}", "#sigma_{J/#psi}", "#it{N}_{J/#psi}", "#mu_{#psi(2S)}", "#it{N}_{#psi(2S)}", "#sigma_{{#psi(2S)}", "sOverB_Jpsi", "sgnf_Jpsi", "sOverB_Psi2s", "sgnf_Psi2s", "corrMatrStatus"],
+        "text": [
+          [0.18, 0.91, "LHC24 pp CB2+RatioPol4Exp, #sqrt{#it{s}} = 5.36 TeV"], 
+          [0.18, 0.86, "2.5 < #it{y} < 4, J/#psi #rightarrow #mu^{+}#mu^{-}"],
+          [0.18, 0.81, "6 < #it{p}_{T} < 12 GeV/#it{c}"]
+        ]
+      }
+    },
+    "output": {
+      "output_file_name": "/Users/garetti/dq_fitter_tails/analysis/muonLowPt210SigmaPDCA/pp_ref/output/Pt_6.0_12.0",
+      "output_merged_file_name": "multi_trial_CB2_Pol4Exp_0.584_mean_1.1_width_23MB"
+    }
+  }
