@@ -14,36 +14,34 @@ sys.path.append('../utils')
 from utils_library import DoSystematics, CheckVariables
 
 def do_systematics(inputCfg):
-    """
-    function to compute the systematics on variables evaluated with the DQFitter
-    """
+    print("Inizio do_systematics")
+
     pathNamePt = inputCfg["inputs"]["pathPtDep"]
     ptMin = inputCfg["inputs"]["ptMin"]
     ptMax = inputCfg["inputs"]["ptMax"]
     varNames = inputCfg["inputs"]["varNames"]
     varIndex = inputCfg["inputs"]["varIndex"]
+    fileNames = inputCfg["inputs"]["fileNames"]
+    #file_types = ["multi_trial", "output"]
+
+    print("Parametri caricati")
+    print(f"path: {pathNamePt}")
+    print(f"ptMin: {ptMin}")
+    print(f"ptMax: {ptMax}")
+    print(f"varNames: {varNames}")
+    print(f"fileNames: {fileNames}")
 
     for varName in varNames:
-        with open("{}/systematic_{}.txt".format(pathNamePt, varName), 'w') as fOut:
+        print(f"Processing variable: {varName}")
+        with open(f"{pathNamePt}/test/systematic_{varName}.txt", 'w') as fOut:
             fOut.write("x_min x_max val stat syst \n")
-            for iPt in range(0, len(ptMin)):
-                if not os.path.exists("{}/Pt_{:2.1f}_{:2.1f}/systematics".format(pathNamePt, ptMin[iPt], ptMax[iPt])):
-                    os.makedirs("{}/Pt_{:2.1f}_{:2.1f}/systematics".format(pathNamePt, ptMin[iPt], ptMax[iPt]))
-                DoSystematics("{}/Pt_{:2.1f}_{:2.1f}".format(pathNamePt, ptMin[iPt], ptMax[iPt]), "multi_trial", varName, varIndex, fOut)
-            fOut.close()
-        
-    #pathNameRap = "/Users/lucamicheletti/GITHUB/dq_fitter/analysis/LHC23_pass3_full/y_dependence"
-    #rapMin = [2.50, 2.75, 3.00, 3.25, 3.50, 3.75]
-    #rapMax = [2.75, 3.00, 3.25, 3.50, 3.75, 4.00]
+            for iPt in range(len(ptMin)):
+                outdir = f"{pathNamePt}/Pt_{ptMin[iPt]:.1f}_{ptMax[iPt]:.1f}_test/test/systematics"
+                print(f"Creating directory (if not exists): {outdir}")
+                if not os.path.exists(outdir):
+                    os.makedirs(outdir)
 
-    #for varName in varNames:
-        #with open("{}/systematic_{}.txt".format(pathNameRap, varName), 'w') as fOut:
-            #fOut.write("x_min x_max val stat syst \n")
-            #for iRap in range(0, len(rapMin)):
-                #if not os.path.exists("{}/Rap_{:3.2f}_{:3.2f}/systematics".format(pathNameRap, rapMin[iRap], rapMax[iRap])):
-                    #os.makedirs("{}/Rap_{:3.2f}_{:3.2f}/systematics".format(pathNameRap, rapMin[iRap], rapMax[iRap]))
-                #DoSystematics("{}/Rap_{:3.2f}_{:3.2f}".format(pathNameRap, rapMin[iRap], rapMax[iRap]), "multi_trial", varName, fOut)
-            #fOut.close()
+                DoSystematics(f"{pathNamePt}/Pt_{ptMin[iPt]:.1f}_{ptMax[iPt]:.1f}_test/test", fileNames, varName, iPt, fOut)
 
 def main():
     print('start')

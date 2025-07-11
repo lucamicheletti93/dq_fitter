@@ -1,5 +1,6 @@
 #from telnetlib import DO
 import os
+import re
 import ROOT
 from ROOT import TCanvas, TFile, TH1F, TPaveText, RooRealVar, RooDataSet, RooWorkspace, RooDataHist, RooArgSet
 from ROOT import gPad, gROOT
@@ -7,12 +8,12 @@ from utils.plot_library import DoResidualPlot, DoPullPlot, DoCorrMatPlot, DoAlic
 from utils.utils_library import ComputeSigToBkg, ComputeSignificance, ComputeAlpha
 
 class DQFitter:
-    def __init__(self, fInName, fInputName, fOutPath, minDatasetRange, maxDatasetRange, fitMethod):
+    def __init__(self, fInName, fInputName, fOutPath, minDatasetRange, maxDatasetRange, ME_norm, tailHistName, fitMethod):
         self.fPdfDict          = {}
         self.tailRootFileName  = "" 
         self.tailHistName      = "" 
         self.fOutPath          = fOutPath
-        self.fFileOutName      = "{}/output__{}_{}.root".format(fOutPath, minDatasetRange, maxDatasetRange)
+        self.fFileOutName      = "{}/output__{}_{}_{}.root".format(fOutPath, minDatasetRange, maxDatasetRange, ME_norm)
         self.fFileOut          = TFile(self.fFileOutName, "RECREATE")
         self.fFileIn           = TFile.Open(fInName)
         self.fInputName        = fInputName
@@ -22,6 +23,7 @@ class DQFitter:
         self.fFitMethod        = fitMethod
         self.fFitRangeMin      = minDatasetRange
         self.fFitRangeMax      = maxDatasetRange
+        self.fMe_norm          = ME_norm
         self.fTrialName        = ""
         self.fMinDatasetRange  = minDatasetRange
         self.fMaxDatasetRange  = maxDatasetRange
@@ -117,11 +119,23 @@ class DQFitter:
                 for j in range(0, len(parVal)):
                     if ("sum" in parName[j]) or ("prod" in parName[j]):
                         self.fRooWorkspace.factory("{}".format(parName[j]))
+                        parNameOr = parName[j]
                         # Replace the exression of the parameter with the name of the parameter
                         r1 = parName[j].find("::") + 2
                         r2 = parName[j].find("(", r1)
                         parName[j] = parName[j][r1:r2]
                         self.fRooWorkspace.factory("{}[{}]".format(parName[j], parVal[j]))
+                        
+                        start = parNameOr.find(",") + 1
+                        end = parNameOr.find(")", start)
+                        val_str = parNameOr[start:end].strip()
+                        #val_str = parNameOr[start:end].strip().replace(".", "")
+
+                        if "mean" in parName[j]:
+                            self.fMean = val_str
+                        elif "width" in parName[j]:
+                            self.fWidth = val_str
+                
                     else:
                         if (parLimMin[j] == parLimMax[j]):
                             self.fRooWorkspace.factory("{}[{}]".format(parName[j], parVal[j]))
@@ -158,12 +172,31 @@ class DQFitter:
         self.fRooWorkspace.writeToFile("{}_tails.root".format(self.fTrialName))
         ROOT.gDirectory.Add(self.fRooWorkspace)
 
-    def FitInvMassSpectrum(self, fitMethod, fitRangeMin, fitRangeMax):
+    def FitInvMassSpectrum(self, fitMethod, fitRangeMin, fitRangeMax, ME_norm, tailRootFileName, tailHistName):
         '''
         Method to perform the fit to the invariant mass spectrum
         '''
         LoadStyle()
-        trialName = self.fTrialName + "_" + str(fitRangeMin) + "_" + str(fitRangeMax)
+        
+        trialName = self.fTrialName + f"_{fitRangeMin}_{fitRangeMax}_{self.fMean}_{self.fWidth}"
+        if ME_norm is not None:
+            trialName += f"_{ME_norm}"
+
+        if "MC" in tailHistName:
+            tails = f'MC_tails'
+        elif "data" in tailHistName:
+            tails = f'data_tails'
+
+        else:
+            match = re.search(r"(\d+)MB", tailHistName)
+            if match:
+                mbName = match.group(0)
+                tails = f'_{mbName}'
+            else:
+                tails = ''
+
+        trialName += f"_{tails}"
+
         self.fRooWorkspace.Print()
         pdf = self.fRooWorkspace.pdf("sum")
         self.fRooMass.setRange("range", fitRangeMin, fitRangeMax)
@@ -249,7 +282,8 @@ class DQFitter:
             reduced_chi2 = chi2.getVal() / ndof
 
         index = 1
-        histResults = TH1F("fit_results_{}_{}".format(trialName, self.fInputName), "fit_results_{}_{}".format(trialName, self.fInputName), len(self.fParNames)+4, 0., len(self.fParNames)+4)
+        n_extra_bins = 6
+        histResults = TH1F("fit_results_{}_{}".format(trialName, self.fInputName), "fit_results_{}_{}".format(trialName, self.fInputName), len(self.fParNames) + n_extra_bins, 0., len(self.fParNames) + n_extra_bins + 1)
         for parName in self.fParNames:
             histResults.GetXaxis().SetBinLabel(index, parName)
             histResults.SetBinContent(index, self.fRooWorkspace.var(parName).getVal())
@@ -258,6 +292,8 @@ class DQFitter:
 
         histResults.GetXaxis().SetBinLabel(index, "chi2")
         histResults.SetBinContent(index, reduced_chi2)
+        index += 1
+        extraIndex = index
         print("CHI2: ", reduced_chi2)
 
         extraText = [] # extra text for "propaganda" plots
@@ -271,9 +307,15 @@ class DQFitter:
             if self.fPdfDict["parForAlicePlot"].count(parName) > 0:
                 text = self.fPdfDict["parNameForAlicePlot"][self.fPdfDict["parForAlicePlot"].index(parName)]
                 if "sig" in parName:
-                    extraText.append("{} = {:.0f} #pm {:.0f}".format(text, self.fRooWorkspace.var(parName).getVal(), self.fRooWorkspace.var(parName).getError()))
+                    if "Jpsi" in parName:
+                        extraText.append("{} = {:.0f} #pm {:.0f}".format(text, self.fRooWorkspace.var(parName).getVal(), self.fRooWorkspace.var(parName).getError()))
+                    if "sig_Psi2s" in parName:
+                        extraText.append("{} = {:.0f} #pm {:.0f}".format(text, self.fRooWorkspace.function(parName).getVal(), self.fRooWorkspace.function(parName).getError()))
                 else:
-                    extraText.append("{} = {:.4f} #pm {:.4f}".format(text, self.fRooWorkspace.var(parName).getVal(), self.fRooWorkspace.var(parName).getError()))
+                    if "Psi2s" in parName:
+                        extraText.append("{} = {:.4f} #pm {:.4f}".format(text, self.fRooWorkspace.function(parName).getVal(), self.fRooWorkspace.function(parName).getError()))
+                    else:
+                        extraText.append("{} = {:.4f} #pm {:.4f}".format(text, self.fRooWorkspace.var(parName).getVal(), self.fRooWorkspace.var(parName).getError()))
             for i in range(0, len(self.fPdfDict["pdfName"])):
                 if self.fPdfDict["pdfName"][i] in parName:
                     (paveText.GetListOfLines().Last()).SetTextColor(self.fPdfDict["pdfColor"][i])
@@ -303,8 +345,9 @@ class DQFitter:
                 max_range = sig_mean + 3. * sig_width
                 sig_to_bkg = ComputeSigToBkg(canvasFit, "JpsiPdf", "BkgPdf", sigForIntegral, bkgForIntegral, min_range, max_range)
                 extraText.append("S/B_{3#sigma, J/#psi} = %5.4f" % sig_to_bkg)
-                histResults.GetXaxis().SetBinLabel(index+1, "sig_to_bkg")
-                histResults.SetBinContent(index+1, sig_to_bkg)
+                histResults.GetXaxis().SetBinLabel(extraIndex, "sOverB_Jpsi")
+                histResults.SetBinContent(extraIndex, sig_to_bkg)
+                extraIndex += 1
             if "sOverB_Psi2s" in parName:
                 sig_mean = self.fRooWorkspace.function("mean_Psi2s").getVal()
                 sig_width = self.fRooWorkspace.function("width_Psi2s").getVal()
@@ -314,8 +357,9 @@ class DQFitter:
                 max_range = sig_mean + 3. * sig_width
                 sig_to_bkg = ComputeSigToBkg(canvasFit, "Psi2sPdf", "BkgPdf", sigForIntegral, bkgForIntegral, min_range, max_range)
                 extraText.append("S/B_{3#sigma, #psi(2S)} = %5.4f" % sig_to_bkg)
-                histResults.GetXaxis().SetBinLabel(index+1, "sig_to_bkg")
-                histResults.SetBinContent(index+1, sig_to_bkg)
+                histResults.GetXaxis().SetBinLabel(extraIndex, "sOverB_Psi2s")
+                histResults.SetBinContent(extraIndex, sig_to_bkg)
+                extraIndex += 1
             if "sgnf_Jpsi" in parName:
                 sig_mean = self.fRooWorkspace.var("mean_Jpsi").getVal()
                 sig_width = self.fRooWorkspace.var("width_Jpsi").getVal()
@@ -324,9 +368,22 @@ class DQFitter:
                 min_range = sig_mean - 3. * sig_width
                 max_range = sig_mean + 3. * sig_width
                 significance = ComputeSignificance(canvasFit, "JpsiPdf", "BkgPdf", sigForIntegral, bkgForIntegral, min_range, max_range)
-                extraText.append("S/#sqrt{(S+B)}_{3#sigma} = %1.0f" % significance)
-                histResults.GetXaxis().SetBinLabel(index+2, "significance")
-                histResults.SetBinContent(index+2, significance)
+                extraText.append("S/#sqrt{(S+B)}_{3#sigma, J/#psi} = %1.0f" % significance)
+                histResults.GetXaxis().SetBinLabel(extraIndex, "sgnf_Jpsi")
+                histResults.SetBinContent(extraIndex, significance)
+                extraIndex += 1
+            if "sgnf_Psi2s" in parName:
+                sig_mean = self.fRooWorkspace.function("mean_Psi2s").getVal()
+                sig_width = self.fRooWorkspace.function("width_Psi2s").getVal()
+                sigForIntegral = self.fRooWorkspace.var("sig_Psi2s").getVal()
+                bkgForIntegral = self.fRooWorkspace.var("bkg").getVal()
+                min_range = sig_mean - 3. * sig_width
+                max_range = sig_mean + 3. * sig_width
+                significance = ComputeSignificance(canvasFit, "Psi2sPdf", "BkgPdf", sigForIntegral, bkgForIntegral, min_range, max_range)
+                extraText.append("S/#sqrt{(S+B)}_{3#sigma, #psi(2S)} = %1.0f" % significance)
+                histResults.GetXaxis().SetBinLabel(extraIndex, "sgnf_Psi2s")
+                histResults.SetBinContent(extraIndex, significance)
+                extraIndex += 1
             if "alpha_vn_Jpsi" in parName:
                 sig_mean = self.fRooWorkspace.var("mean_Jpsi").getVal()
                 sig_width = self.fRooWorkspace.var("width_Jpsi").getVal()
@@ -348,7 +405,7 @@ class DQFitter:
         # Official fit plot
         if self.fPdfDict["doAlicePlot"]:
             cosmetics = self.fPdfDict["cosmeticsForAlicePlot"]
-            DoAlicePlot(rooDs, pdf, fRooPlotOff, self.fPdfDict, self.fInputName, trialName, self.fOutPath, extraText, cosmetics)
+            canvasALICE = DoAlicePlot(rooDs, pdf, fRooPlotOff, self.fPdfDict, self.fInputName, trialName, self.fOutPath, extraText, cosmetics)
 
         # Save results
         self.fFileOut.cd()
@@ -360,13 +417,25 @@ class DQFitter:
 
         # Residual plot
         if self.fDoResidualPlot:
-            canvasResidual = DoResidualPlot(fRooPlotExtra, self.fRooMass, trialName)
+            print(fRooPlotExtra, self.fRooMass, self.fInputName, self.fOutPath, trialName)
+            canvasResidual = DoResidualPlot(fRooPlotExtra, self.fRooMass, self.fInputName, self.fOutPath, trialName)
             canvasResidual.Write()
+
 
         # Pull plot
         if self.fDoPullPlot:
-            canvasPull = DoPullPlot(fRooPlotExtra, self.fRooMass, trialName)
+            canvasPull = DoPullPlot(fRooPlotExtra, self.fRooMass, self.fInputName, self.fOutPath, trialName)
             canvasPull.Write()
+
+        if self.fPdfDict["doResidualPlotPdf"]:
+            canvasResidual.SaveAs("{}/residual_plot_{}_{}.pdf".format(self.fOutPath, self.fInputName, trialName))
+        
+        if self.fPdfDict["doPullPlotPdf"]:
+            canvasPull.SaveAs("{}/pull_plot_{}_{}.pdf".format(self.fOutPath, self.fInputName, trialName))
+
+        # Se entrambi i plot sono stati creati, salviamo un unico PDF combinato
+        #if canvasALICE and canvasResidual:
+        #SaveCombinedPlot(canvasALICE, canvasPull, self.fOutPath, self.fInputName, trialName)
 
         # Correlation matrix plot
         if self.fDoCorrMatPlot:
@@ -377,17 +446,34 @@ class DQFitter:
         self.fFileIn.Close()
 
 
-    def SingleFit(self):
+    def SingleFit(self, tailRootFileName, tailHistName):
         '''
         Method to perform a single fit (calling multi-trial from external script)
         '''
-        self.FitInvMassSpectrum(self.fFitMethod, self.fFitRangeMin, self.fFitRangeMax)
+        self.FitInvMassSpectrum(self.fFitMethod, self.fFitRangeMin, self.fFitRangeMax, self.fMe_norm, tailRootFileName, tailHistName)
         self.fFileOut.Close()
 
+        me_norm_str = str(self.fMe_norm) if self.fMe_norm is not None else "_"
+        if "MC" in tailHistName:
+            tails = f'MC_tails'
+        elif "data" in tailHistName:
+            tails = f'data_tails'
+            """ else:
+            tails = f'free_tails' """
+        else:
+            match = re.search(r"(\d+)MB", tailHistName)
+            if match:
+                mbName = match.group(0)
+                tails = f'_{mbName}'
+            else:
+                tails = ''
+
         # Update file name
-        trialName = self.fInputName + "_" + self.fTrialName + "_" + str(self.fFitRangeMin) + "_" + str(self.fFitRangeMax) + ".root"
+        trialName = f"output__{self.fInputName}_{self.fTrialName}_{self.fFitRangeMin}_{self.fFitRangeMax}_{self.fMean}_{self.fWidth}_{me_norm_str}_{tails}.root"
         oldFileOutName = self.fFileOutName
-        newFileOutName = oldFileOutName.replace(str(self.fFitRangeMin) + "_" + str(self.fFitRangeMax) + ".root", trialName)
-        self.fFileOutNameNew = newFileOutName
+        newFileOutName = os.path.join(os.path.dirname(oldFileOutName), trialName)
+
+        # Rename file
         os.rename(oldFileOutName, newFileOutName)
+        self.fFileOutNameNew = newFileOutName
 
