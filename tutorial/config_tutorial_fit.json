@@ -2,6 +2,8 @@
   "input": {
     "input_file_name": "tutorial.root",
     "input_name": ["histMass"],
+    "tailRootFileName": null,
+    "tailHistNames": [null],
     "pdf_dictionary": {
       "pdf": ["Gaus", "Gaus", "Exp", "SUM"],
       "pdfName": ["Jpsi", "Psi2s", "Bkg", "SUM"],
@@ -35,17 +37,23 @@
       "fitRangeMin": [2.2, 2],
       "fitRangeMax": [4.8, 5],
       "rebin": 1,
+      "ME_norm": "",
+      "fitMethod": "likelyhood",
       "doResidualPlot": true,
       "doPullPlot": true, 
       "doCorrMatPlot": true,
+      "doResidualPlotPdf": true, 
+      "doPullPlotPdf": true, 
       "doAlicePlot": true,
       "cosmeticsForAlicePlot": {
-          "logScale" : false,
-          "extraTextSize" : 0.025,
-          "extraTextSpacing" : 0.04,
-          "extraTextPos" : [0.75, 0.55],
-          "legendPos" : [0.65, 0.60, 0.85, 0.89]
-        },
+        "logScale" : false,
+        "yRangeMin" : 1,
+        "yRangeMax" : 1.2,
+        "extraTextSize" : 0.025,
+        "extraTextSpacing" : 0.04,
+        "extraTextPos" : [0.75, 0.47],
+        "legendPos" : [0.65, 0.60, 0.85, 0.89]
+      },
       "parForAlicePlot": ["mean_Jpsi", "width_Jpsi", "sig_Jpsi", "sig_Psi2s"],
       "parNameForAlicePlot": ["#mu_{J/#psi}", "#sigma_{J/#psi}", "#it{N}_{J/#psi}","#it{N}_{#psi(2S)}"],
       "text": [
