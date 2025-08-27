@@ -3,7 +3,7 @@
 This python class is based on RooFit and allows to perform binned and unbinned fits. An example of fit can be found in /tutorial:
 
 ### Tutorial
-- Generate a toy sample
+- The tutorial sample `tutorial.root` is already generated, if you want to generate another same you can do:
   ```ruby
   python tutorial.py config_tutorial_fit.json --gen_tutorial
   ```
