@@ -96,6 +96,11 @@ def main():
         histNames      = inputCfg["input"]["input_name"]
         minFitRanges   = inputCfg["input"]["pdf_dictionary"]["fitRangeMin"]
         maxFitRanges   = inputCfg["input"]["pdf_dictionary"]["fitRangeMax"]
+        ME_norm        = inputCfg["input"]["pdf_dictionary"]["ME_norm"]
+        fitMethod      = inputCfg["input"]["pdf_dictionary"]["fitMethod"]
+
+        tailRootFileName = None
+        tailHistNames = ["Data"]
         
         if not path.isdir(outputFileName):
             os.system("mkdir -p %s" % (outputFileName))
@@ -105,10 +110,9 @@ def main():
                 with open(args.cfgFileName, 'r') as jsonCfgFile:
                     inputCfg = json.load(jsonCfgFile)
                 pdfDictionary  = inputCfg["input"]["pdf_dictionary"]
-                dqFitter = DQFitter(inputFileName, histName, outputFileName, minFitRange, maxFitRange)
-                print(inputCfg["input"]["pdf_dictionary"]["parName"])
-                dqFitter.SetFitConfig(pdfDictionary)
-                dqFitter.SingleFit()
+                dqFitter = DQFitter(inputFileName, histName, outputFileName, minFitRange, maxFitRange, ME_norm, tailHistNames[0], fitMethod)
+                dqFitter.SetFitConfig(pdfDictionary, tailRootFileName, tailHistNames[0]) #using each tail set at a time
+                dqFitter.SingleFit(tailRootFileName, tailHistNames[0])
 
 
 if __name__ == '__main__':
