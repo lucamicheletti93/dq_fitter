@@ -8,24 +8,14 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-
-    # Usa direttamente l'immagine ufficiale ROOT come container
     container:
-      image: rootproject/root:6.30.06  # puoi cambiare la versione
-
+      image: rootproject/root:latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up Python
+      - uses: actions/checkout@v3
+      - name: Setup Python & dependencies
         run: |
           python3 -m ensurepip --upgrade
-          python3 -m pip install --upgrade pip
-
-      - name: Install dependencies
-        run: |
+          python3 -m pip install --upgrade pip pytest
           pip install -r requirements.txt
-          pip install pytest
-
       - name: Run tests
         run: pytest -v
