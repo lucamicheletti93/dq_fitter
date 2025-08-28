@@ -11,7 +11,7 @@ from ROOT import gRandom
 sys.path.append('../')
 from DQFitter import DQFitter
 
-def main():
+def test_tutorial():
     with open("../tutorial/config_tutorial_fit.json", 'r') as jsonCfgFile:
         inputCfg = json.load(jsonCfgFile)
     print('Loading task configuration: Done!')
@@ -41,7 +41,3 @@ def main():
             dqFitter.SingleFit(tailRootFileName, tailHistNames[0])
             fitResult = dqFitter.GetFitResult()
             assert int(fitResult.Status()) == 0
-
-
-if __name__ == '__main__':
-    main()
