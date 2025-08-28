@@ -75,9 +75,15 @@ def test_tutorial():
     GenerateTutorialSample()
     here = pathlib.Path(__file__).parent
     cfg_path = here / ".." / "tutorial" / "config_tutorial_fit.json"
+    gaus_path = here / ".." / "fit_library" / "GausPdf.cxx+"
+    exp_path = here / ".." / "fit_library" / "ExpPdf.cxx+"
+
     with open(cfg_path, 'r') as jsonCfgFile:
         inputCfg = json.load(jsonCfgFile)
     print('Loading task configuration: Done!')
+
+    ROOT.gROOT.ProcessLineSync(f".x {gaus_path}")
+    ROOT.gROOT.ProcessLineSync(f".x {exp_path}")
 
     print('start')
     inputFileName  = inputCfg["input"]["input_file_name"]
