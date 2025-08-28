@@ -1,5 +1,6 @@
 from traceback import print_tb
 import json
+import pathlib
 import sys
 import argparse
 from array import array
@@ -12,7 +13,9 @@ sys.path.append('../')
 from DQFitter import DQFitter
 
 def test_tutorial():
-    with open("config_tutorial_fit.json", 'r') as jsonCfgFile:
+    here = pathlib.Path(__file__).parent
+    cfg_path = here / ".." / "tutorial" / "config_tutorial_fit.json"
+    with open(cfg_path, 'r') as jsonCfgFile:
         inputCfg = json.load(jsonCfgFile)
     print('Loading task configuration: Done!')
 
