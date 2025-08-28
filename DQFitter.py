@@ -32,6 +32,7 @@ class DQFitter:
         self.fDoPullPlot       = False
         self.fDoCorrMatPlot    = False
         self.fFileOutNameNew   = ""
+        self.requiredArgs      = ["fitRangeMin", "fitRangeMax", "ME_norm", "fitMethod"]
 
     def GetFileOutName(self):
         return self.fFileOutNameNew
@@ -40,10 +41,9 @@ class DQFitter:
         '''
         Method set the configuration of the fit
         '''
-        self.requiredArgs = ["tailRootFileName", "tailHistNames", "fitRangeMin", "fitRangeMax", "ME_norm", "fitMethod"]
         for arg in self.requiredArgs:
             if arg not in pdfDict:
-                raise ValueError(f"Missing required config arg: {arg}")
+                raise ValueError(f"Missing required config requiredArgs: {arg}")
 
         self.fPdfDict = pdfDict
         if tailRootFileName is not None and tailHistName is not None:
