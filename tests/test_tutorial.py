@@ -72,7 +72,7 @@ def GenerateTutorialSample():
     print("counter Psi(2S) = %f" % (counterSig2))
 
 def test_tutorial():
-    #GenerateTutorialSample()
+    GenerateTutorialSample()
     here = pathlib.Path(__file__).parent
     cfg_path = here / ".." / "tutorial" / "config_tutorial_fit.json"
     gaus_path = here / ".." / "fit_library" / "GausPdf.cxx+"
