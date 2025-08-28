@@ -12,10 +12,13 @@ jobs:
       image: rootproject/root:latest
     steps:
       - uses: actions/checkout@v3
-      - name: Setup Python & dependencies
+
+      - name: Install pip & pytest
         run: |
-          python3 -m ensurepip --upgrade
-          python3 -m pip install --upgrade pip pytest
-          pip install -r requirements.txt
+          apt-get update
+          apt-get install -y python3-pip
+          pip3 install --upgrade pip pytest
+          if [ -f requirements.txt ]; then pip3 install -r requirements.txt; fi
+
       - name: Run tests
         run: pytest -v
