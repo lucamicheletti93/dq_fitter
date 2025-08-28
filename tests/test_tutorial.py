@@ -36,7 +36,7 @@ def test_tutorial():
     for histName in histNames:
         for minFitRange, maxFitRange in zip(minFitRanges, maxFitRanges):
             # Reload configuration file
-            with open("../tutorial/config_tutorial_fit.json", 'r') as jsonCfgFile:
+            with open(cfg_path, 'r') as jsonCfgFile:
                 inputCfg = json.load(jsonCfgFile)
             pdfDictionary  = inputCfg["input"]["pdf_dictionary"]
             dqFitter = DQFitter(inputFileName, histName, outputFileName, minFitRange, maxFitRange, ME_norm, tailHistNames[0], fitMethod)
