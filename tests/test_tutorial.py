@@ -12,7 +12,7 @@ sys.path.append('../')
 from DQFitter import DQFitter
 
 def test_tutorial():
-    with open("../tutorial/config_tutorial_fit.json", 'r') as jsonCfgFile:
+    with open("config_tutorial_fit.json", 'r') as jsonCfgFile:
         inputCfg = json.load(jsonCfgFile)
     print('Loading task configuration: Done!')
 
