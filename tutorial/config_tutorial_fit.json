@@ -34,8 +34,8 @@
         ["aa", "bb"],
         ["sig_Jpsi", "sig_Psi2s", "bkg"]
       ],
-      "fitRangeMin": [2.2, 2],
-      "fitRangeMax": [4.8, 5],
+      "fitRangeMin": [2.2],
+      "fitRangeMax": [4.8],
       "rebin": 1,
       "ME_norm": "",
       "fitMethod": "likelyhood",
