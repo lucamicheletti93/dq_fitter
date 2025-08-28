@@ -1,5 +1,4 @@
 from traceback import print_tb
-import yaml
 import json
 import sys
 import argparse
