@@ -40,7 +40,7 @@ class DQFitter:
         '''
         Method set the configuration of the fit
         '''
-        requiredArgs = ["tailRootFileName", "tailHistNames", "fitRangeMin", "fitRangeMax", "ME_norm", "fitMethod"]
+        self.requiredArgs = ["tailRootFileName", "tailHistNames", "fitRangeMin", "fitRangeMax", "ME_norm", "fitMethod"]
         for arg in self.requiredArgs:
             if arg not in pdfDict:
                 raise ValueError(f"Missing required config arg: {arg}")
