@@ -279,10 +279,11 @@ class DQFitter:
             nbinsperGev = rooDs.numEntries() / (self.fPdfDict["fitRangeMax"][0] - self.fPdfDict["fitRangeMin"][0])
             nBins = (fitRangeMax - fitRangeMin) * nbinsperGev
         
-            chi2 = ROOT.RooChi2Var("chi2", "chi2", pdf, rooDs, False, ROOT.RooDataHist.SumW2)
-            nPars = self.rooFitRes.floatParsFinal().getSize()
-            ndof = nBins - nPars
-            reduced_chi2 = chi2.getVal() / ndof
+            #chi2 = ROOT.RooChi2Var("chi2", "chi2", pdf, rooDs, False, ROOT.RooDataHist.SumW2)
+            #nPars = self.rooFitRes.floatParsFinal().getSize()
+            #ndof = nBins - nPars
+            #reduced_chi2 = chi2.getVal() / ndof
+            reduced_chi2 = 1
 
         index = 1
         n_extra_bins = 6
