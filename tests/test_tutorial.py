@@ -39,6 +39,8 @@ def main():
             dqFitter = DQFitter(inputFileName, histName, outputFileName, minFitRange, maxFitRange, ME_norm, tailHistNames[0], fitMethod)
             dqFitter.SetFitConfig(pdfDictionary, tailRootFileName, tailHistNames[0])
             dqFitter.SingleFit(tailRootFileName, tailHistNames[0])
+            fitResult = dqFitter.GetFitResult()
+            assert int(fitResult.Status()) == 0
 
 
 if __name__ == '__main__':

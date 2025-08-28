@@ -35,6 +35,9 @@ class DQFitter:
 
     def GetFileOutName(self):
         return self.fFileOutNameNew
+    
+    def GetFitResult(self):
+        return self.rooFitRes
 
     def SetFitConfig(self, pdfDict, tailRootFileName, tailHistName):
         '''
@@ -216,10 +219,10 @@ class DQFitter:
         # Select the fit method
         if fitMethod == "likelyhood":
             print("########### Perform likelyhood fit ###########")
-            rooFitRes = ROOT.RooFitResult(pdf.fitTo(rooDs, ROOT.RooFit.Range(fitRangeMin,fitRangeMax), ROOT.RooFit.Save()))
+            self.rooFitRes = ROOT.RooFitResult(pdf.fitTo(rooDs, ROOT.RooFit.Range(fitRangeMin,fitRangeMax), ROOT.RooFit.Save()))
         if fitMethod == "chi2":
             print("########### Perform X2 fit ###########")
-            rooFitRes = ROOT.RooFitResult(pdf.chi2FitTo(rooDs, ROOT.RooFit.Range(fitRangeMin,fitRangeMax),ROOT.RooFit.PrintLevel(-1), ROOT.RooFit.Save()))
+            self.rooFitRes = ROOT.RooFitResult(pdf.chi2FitTo(rooDs, ROOT.RooFit.Range(fitRangeMin,fitRangeMax),ROOT.RooFit.PrintLevel(-1), ROOT.RooFit.Save()))
 
         # Code to run sPlot
         if ("TTree" in self.fInput.ClassName()) and self.fPdfDict["sPlot"]["sRun"]:
@@ -266,7 +269,7 @@ class DQFitter:
             nBins = (fitRangeMax - fitRangeMin) * nbinsperGev
         
             chi2 = ROOT.RooChi2Var("chi2", "chi2", pdf, rooDsBinned, False, ROOT.RooDataHist.SumW2)
-            nPars = rooFitRes.floatParsFinal().getSize()
+            nPars = self.rooFitRes.floatParsFinal().getSize()
             ndof = nBins - nPars
             reduced_chi2 = chi2.getVal() / ndof
         else:
@@ -277,7 +280,7 @@ class DQFitter:
             nBins = (fitRangeMax - fitRangeMin) * nbinsperGev
         
             chi2 = ROOT.RooChi2Var("chi2", "chi2", pdf, rooDs, False, ROOT.RooDataHist.SumW2)
-            nPars = rooFitRes.floatParsFinal().getSize()
+            nPars = self.rooFitRes.floatParsFinal().getSize()
             ndof = nBins - nPars
             reduced_chi2 = chi2.getVal() / ndof
 
@@ -396,11 +399,11 @@ class DQFitter:
                 histResults.GetXaxis().SetBinLabel(index+3, "alpha_vn")
                 histResults.SetBinContent(index+3, alpha_vn)
             if "corrMatrStatus" in parName:
-                covMatrixStatus = rooFitRes.covQual()
+                covMatrixStatus = self.rooFitRes.covQual()
                 extraText.append("Cov. matrix status= %i" % covMatrixStatus)
         
         # Print the fit result
-        rooFitRes.Print()
+        self.rooFitRes.Print()
         
         # Official fit plot
         if self.fPdfDict["doAlicePlot"]:
@@ -439,7 +442,7 @@ class DQFitter:
 
         # Correlation matrix plot
         if self.fDoCorrMatPlot:
-            canvasCorrMat = DoCorrMatPlot(rooFitRes, trialName)
+            canvasCorrMat = DoCorrMatPlot(self.rooFitRes, trialName)
             canvasCorrMat.Write()
 
         del self.fRooWorkspace
