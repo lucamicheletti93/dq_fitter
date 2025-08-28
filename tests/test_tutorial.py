@@ -109,4 +109,4 @@ def test_tutorial():
             dqFitter.SetFitConfig(pdfDictionary, tailRootFileName, tailHistNames[0])
             dqFitter.SingleFit(tailRootFileName, tailHistNames[0])
             fitResult = dqFitter.GetFitResult()
-            assert int(fitResult.Status()) == 0
+            assert int(fitResult.status()) == 0
