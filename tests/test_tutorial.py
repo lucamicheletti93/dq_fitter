@@ -74,7 +74,7 @@ def GenerateTutorialSample():
 def test_tutorial():
     GenerateTutorialSample()
     here = pathlib.Path(__file__).parent
-    cfgPaths = []  = here / ".." / "tutorial" / "config_tutorial_fit.json"
+    cfgPaths = []
     cfgPaths.append(here / ".." / "tutorial" / "config_tutorial_fit.json")
     cfgPaths.append(here / ".." / "analysis" / "configs" / "examples" / "config_analysis_CB2_VWG.json")
 
