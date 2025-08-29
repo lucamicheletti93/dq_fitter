@@ -74,36 +74,44 @@ def GenerateTutorialSample():
 def test_tutorial():
     GenerateTutorialSample()
     here = pathlib.Path(__file__).parent
-    cfg_path = here / ".." / "tutorial" / "config_tutorial_fit.json"
-    gaus_path = here / ".." / "fit_library" / "GausPdf.cxx+"
-    exp_path = here / ".." / "fit_library" / "ExpPdf.cxx+"
+    cfgPaths = []  = here / ".." / "tutorial" / "config_tutorial_fit.json"
+    cfgPaths.append(here / ".." / "tutorial" / "config_tutorial_fit.json")
+    cfgPaths.append(here / ".." / "analysis" / "configs" / "examples" / "config_analysis_CB2_VWG.json")
 
-    with open(cfg_path, 'r') as jsonCfgFile:
-        inputCfg = json.load(jsonCfgFile)
-    print('Loading task configuration: Done!')
+    gausPath = here / ".." / "fit_library" / "GausPdf.cxx+"
+    expPath  = here / ".." / "fit_library" / "ExpPdf.cxx+"
+    cb2Path  = here / ".." / "fit_library" / "CB2Pdf.cxx+"
+    vwgPath  = here / ".." / "fit_library" / "VWGPdf.cxx+"
 
-    ROOT.gROOT.ProcessLineSync(f".x {gaus_path}")
-    ROOT.gROOT.ProcessLineSync(f".x {exp_path}")
+    ROOT.gROOT.ProcessLineSync(f".x {gausPath}")
+    ROOT.gROOT.ProcessLineSync(f".x {expPath}")
+    ROOT.gROOT.ProcessLineSync(f".x {cb2Path}")
+    ROOT.gROOT.ProcessLineSync(f".x {vwgPath}")
 
-    print('start')
-    inputFileName  = inputCfg["input"]["input_file_name"]
-    outputFileName = inputCfg["output"]["output_file_name"]
-    histNames      = inputCfg["input"]["input_name"]
-    minFitRanges   = inputCfg["input"]["pdf_dictionary"]["fitRangeMin"]
-    maxFitRanges   = inputCfg["input"]["pdf_dictionary"]["fitRangeMax"]
-    ME_norm        = inputCfg["input"]["pdf_dictionary"]["ME_norm"]
-    fitMethod      = inputCfg["input"]["pdf_dictionary"]["fitMethod"]
+    for cfgPath in cfgPaths:
+        with open(cfgPath, 'r') as jsonCfgFile:
+            inputCfg = json.load(jsonCfgFile)
+        print('Loading task configuration: Done!')
 
-    tailRootFileName = None
-    tailHistNames = ["Data"]
-        
-    if not path.isdir(outputFileName):
-        os.system("mkdir -p %s" % (outputFileName))
-    for histName in histNames:
-        for minFitRange, maxFitRange in zip(minFitRanges, maxFitRanges):
-            # Reload configuration file
-            with open(cfg_path, 'r') as jsonCfgFile:
-                inputCfg = json.load(jsonCfgFile)
-            pdfDictionary  = inputCfg["input"]["pdf_dictionary"]
-            dqFitter = DQFitter(inputFileName, histName, outputFileName, minFitRange, maxFitRange, ME_norm, tailHistNames[0], fitMethod)
-            dqFitter.SetFitConfig(pdfDictionary, tailRootFileName, tailHistNames[0])
+        print('start')
+        inputFileName  = inputCfg["input"]["input_file_name"]
+        outputFileName = inputCfg["output"]["output_file_name"]
+        histNames      = inputCfg["input"]["input_name"]
+        minFitRanges   = inputCfg["input"]["pdf_dictionary"]["fitRangeMin"]
+        maxFitRanges   = inputCfg["input"]["pdf_dictionary"]["fitRangeMax"]
+        ME_norm        = inputCfg["input"]["pdf_dictionary"]["ME_norm"]
+        fitMethod      = inputCfg["input"]["pdf_dictionary"]["fitMethod"]
+
+        tailRootFileName = None
+        tailHistNames = ["Data"]
+            
+        if not path.isdir(outputFileName):
+            os.system("mkdir -p %s" % (outputFileName))
+        for histName in histNames:
+            for minFitRange, maxFitRange in zip(minFitRanges, maxFitRanges):
+                # Reload configuration file
+                with open(cfgPath, 'r') as jsonCfgFile:
+                    inputCfg = json.load(jsonCfgFile)
+                pdfDictionary  = inputCfg["input"]["pdf_dictionary"]
+                dqFitter = DQFitter(inputFileName, histName, outputFileName, minFitRange, maxFitRange, ME_norm, tailHistNames[0], fitMethod)
+                dqFitter.SetFitConfig(pdfDictionary, tailRootFileName, tailHistNames[0])
