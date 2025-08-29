@@ -1,9 +1,7 @@
 {
     "input": {
-      "input_file_name": "Histograms_AnalysisResults_table_reader_time_association.root",
-      "input_name": [
-        "Proj_PairsMuonSEPM_matchedMchMid"
-      ],
+      "input_file_name": "tutorial.root",
+      "input_name": ["histMass"],
       "pdf_dictionary": {
         "pdf": ["CB2", "CB2", "VWG", "SUM"],
         "pdfName": ["Jpsi", "Psi2s", "Bkg", "SUM"],
@@ -37,6 +35,7 @@
         "fitRangeMin": [2.1],
         "fitRangeMax": [4.9],
         "rebin": 1,
+        "ME_norm": "",
         "fitMethod": "likelyhood",
         "doResidualPlot": true,
         "doPullPlot": true, 
