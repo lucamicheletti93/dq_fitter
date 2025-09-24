@@ -33,21 +33,21 @@ def do_systematics(inputCfg):
 
     for varName in varNames:
         print(f"Processing variable: {varName}")
-        with open(f"{pathNamePt}/test/systematic_{varName}.txt", 'w') as fOut:
+        with open(f"{pathNamePt}/systematic_{varName}.txt", 'w') as fOut:
             fOut.write("x_min x_max val stat syst \n")
             for iPt in range(len(ptMin)):
-                outdir = f"{pathNamePt}/Pt_{ptMin[iPt]:.1f}_{ptMax[iPt]:.1f}_test/test/systematics"
+                outdir = f"{pathNamePt}/Pt_{ptMin[iPt]:.1f}_{ptMax[iPt]:.1f}/systematics"
                 print(f"Creating directory (if not exists): {outdir}")
                 if not os.path.exists(outdir):
                     os.makedirs(outdir)
 
-                DoSystematics(f"{pathNamePt}/Pt_{ptMin[iPt]:.1f}_{ptMax[iPt]:.1f}_test/test", fileNames, varName, iPt, fOut)
+                DoSystematics(f"{pathNamePt}/Pt_{ptMin[iPt]:.1f}_{ptMax[iPt]:.1f}", fileNames, varName, varIndex, fOut)
 
 def main():
     print('start')
     parser = argparse.ArgumentParser(description='Arguments to pass')
     parser.add_argument('cfgFileName', metavar='text', default='config.yml', help='config file name')
-    parser.add_argument("--do_systematics", help="run the single fit", action="store_true")
+    parser.add_argument("--run", help="run the single fit", action="store_true")
     parser.add_argument("--do_check_variables", help="run the single fit", action="store_true")
     args = parser.parse_args()
     print(args)
@@ -58,7 +58,7 @@ def main():
         inputCfg = yaml.load(ymlCfgFile, yaml.FullLoader)
     print('Loading task configuration: Done!')
     
-    if args.do_systematics:
+    if args.run:
         do_systematics(inputCfg)
     
 

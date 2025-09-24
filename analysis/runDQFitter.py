@@ -35,8 +35,8 @@ def main():
         minFitRanges   = inputCfg["input"]["pdf_dictionary"]["fitRangeMin"]
         maxFitRanges   = inputCfg["input"]["pdf_dictionary"]["fitRangeMax"]
         fitMethod      = inputCfg["input"]["pdf_dictionary"]["fitMethod"]
-        ME_norm   = inputCfg["input"]["pdf_dictionary"]["ME_norm"]
-        parName  = inputCfg["input"]["pdf_dictionary"]["parName"]
+        ME_norm        = inputCfg["input"]["pdf_dictionary"]["ME_norm"]
+        parName        = inputCfg["input"]["pdf_dictionary"]["parName"]
 
         mean_Psi2s = None
         width_Psi2s = None
@@ -57,7 +57,7 @@ def main():
         width_str = str(width_Psi2s if width_Psi2s is not None else "").replace('.', '') """
         mean_str = str(mean_Psi2s if mean_Psi2s is not None else "")
         width_str = str(width_Psi2s if width_Psi2s is not None else "")
-        me_str = str(ME_norm) if ME_norm is not None else ""
+        #me_str = str(ME_norm) if ME_norm is not None else ""
         if ME_norm is not None:
             suffix = f"_{mean_str}_{width_str}_{ME_norm}"
         else:
@@ -105,7 +105,7 @@ def main():
                                 mbName = match.group(0)
                                 mergedFileName_full = f'{outputFileName}/{mergedFileName}_{suffix}_{mbName}.root '
                             else:
-                                tmergedFileName_full = f'{outputFileName}/{mergedFileName}_{suffix}.root '
+                                mergedFileName_full = f'{outputFileName}/{mergedFileName}_{suffix}.root '
                             
                         listOfOutputFileNamesToMerge = " ".join(listOfOutputFileNames)
                         mergingCommand = mergedFileName_full + listOfOutputFileNamesToMerge
@@ -125,11 +125,11 @@ def main():
                         inputCfg = json.load(jsonCfgFile)
                     pdfDictionary  = inputCfg["input"]["pdf_dictionary"]
                     print(inputFileName)
-                    dqFitter = DQFitter(inputFileName, histName, outputFileName, minFitRange, maxFitRange, ME_norm, tailHistName, fitMethod)
+                    dqFitter = DQFitter(inputFileName, histName, outputFileName, minFitRange, maxFitRange, ME_norm, tailHistNames[0], fitMethod)
                     #dqFitter = DQFitter(inputFileName, histName, outputFileName, minFitRange, maxFitRange, fitMethod)
                     print(inputCfg["input"]["pdf_dictionary"]["parName"])
-                    dqFitter.SetFitConfig(pdfDictionary, tailRootFileName, None)
-                    dqFitter.SingleFit(tailRootFileName, tailHistName)
+                    dqFitter.SetFitConfig(pdfDictionary, tailRootFileName, tailHistNames[0])
+                    dqFitter.SingleFit(tailRootFileName, tailHistNames[0])
                     listOfOutputFileNames.append(dqFitter.GetFileOutName())
             if len(histNames) > 1 or len(minFitRanges) > 1:
                 mergedFileName = f'{outputFileName}/{mergedFileName}.root '

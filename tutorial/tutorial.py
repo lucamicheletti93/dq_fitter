@@ -100,7 +100,7 @@ def main():
         fitMethod      = inputCfg["input"]["pdf_dictionary"]["fitMethod"]
 
         tailRootFileName = None
-        tailHistNames = ["Data"]
+        tailHistNames = ["data"]
         
         if not path.isdir(outputFileName):
             os.system("mkdir -p %s" % (outputFileName))

@@ -133,7 +133,6 @@ def DoSystematics(path, varBinList, parName, varIndex, fOut):
 
     sigFuncList = ["CB2", "NA60"]
     bkgFuncList = ["VWG", "Pol4Exp"]
-    fileNameList = ["multi_trial", "output"]
 
     # Lambda function to check the content of the name
     contains_any = lambda substr_list, s: any(sub in s for sub in substr_list)
@@ -146,7 +145,6 @@ def DoSystematics(path, varBinList, parName, varIndex, fOut):
     index = 0.5
     for fInName in fInNameSelList:
         fIn = TFile.Open(fInName)
-        print("FINNAME: ", fInName)
         for key in fIn.GetListOfKeys():
             kname = key.GetName()
             if "fit_results" in fIn.Get(kname).GetName():
@@ -266,12 +264,21 @@ def DoSystematics(path, varBinList, parName, varIndex, fOut):
     if "sig" in parName:
         if "Jpsi" in parName: latexParName = "N_{J/#psi}"
         if "Psi2s" in parName: latexParName = "N_{#psi(2S)}"
+        if "Upsilon1s" in parName: latexParName = "N_{#varUpsilon(1S)}"
+        if "Upsilon2s" in parName: latexParName = "N_{#varUpsilon(2S)}"
+        if "Upsilon3s" in parName: latexParName = "N_{#varUpsilon(3S)}"
     if "width" in parName:
         if "Jpsi" in parName: latexParName = "#sigma_{J/#psi}"
         if "Psi2s" in parName: latexParName = "#sigma_{#psi(2S)}"
+        if "Upsilon1s" in parName: latexParName = "#sigma_{#varUpsilon(1S)}"
+        if "Upsilon2s" in parName: latexParName = "#sigma_{#varUpsilon(2S)}"
+        if "Upsilon3s" in parName: latexParName = "#sigma_{#varUpsilon(3S)}"
     if "mean" in parName:
         if "Jpsi" in parName: latexParName = "#mu_{J/#psi}"
         if "Psi2s" in parName: latexParName = "#mu_{#psi(2S)}"
+        if "Upsilon1s" in parName: latexParName = "#mu_{#varUpsilon(1S)}"
+        if "Upsilon2s" in parName: latexParName = "#mu_{#varUpsilon(2S)}"
+        if "Upsilon3s" in parName: latexParName = "#mu_{#varUpsilon(3S)}"
     if "ratio" in parName:
         latexParName = "#psi(2S) / J/#psi"
     if "chi2" in parName: latexParName = "#chi^{2}_{FIT}"
@@ -288,10 +295,12 @@ def DoSystematics(path, varBinList, parName, varIndex, fOut):
     #print("%s -> %1.0f ± %1.0f (%3.2f%%) ± %1.0f (%3.2f%%)" % (varBin, centralVal, statError, (statError/centralVal)*100, systError, (systError/centralVal)*100))
 
     num = re.findall(r'[\d\.\d]+', path)
-    if ("mean" in parName) or ("ratio" in parName):
-        fOut.write("%3.2f %3.2f %3.2f %3.2f %3.2f \n" % (float(num[0]), float(num[1]), centralVal, statError, systError))
+    print(num)
+    print(varIndex)
+    if ("mean" in parName) or ("width" in parName) or ("ratio" in parName):
+        fOut.write("%3.2f %3.2f %3.2f %3.2f %3.2f \n" % (float(num[varIndex]), float(num[varIndex+1]), centralVal, statError, systError))
     else:
-        fOut.write("%3.2f %3.2f %3.2f %3.2f %3.2f \n" % (float(num[0]), float(num[1]), centralVal, statError, systError))
+        fOut.write("%3.2f %3.2f %3.2f %3.2f %3.2f \n" % (float(num[varIndex]), float(num[varIndex+1]), centralVal, statError, systError))
         
     canvasParVal.SaveAs("{}/systematics/{}.pdf".format(path, parName))
 
