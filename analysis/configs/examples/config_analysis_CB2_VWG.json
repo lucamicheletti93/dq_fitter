@@ -1,7 +1,9 @@
 {
     "input": {
-      "input_file_name": "tutorial.root",
-      "input_name": ["histMass"],
+      "input_file_name": "/Users/lucamicheletti/cernbox/JPSI/Jpsi_pp_ref_cross_section_run3/data/2024/LHC24aq_pass1_medium/Histograms_AnalysisResults_std_assoc.root",
+      "input_name": ["Proj_PairsMuonSEPM_matchedMchMid__Pt_10.0_20.0"],
+      "tailRootFileName": null,
+      "tailHistNames": ["data"],
       "pdf_dictionary": {
         "pdf": ["CB2", "CB2", "VWG", "SUM"],
         "pdfName": ["Jpsi", "Psi2s", "Bkg", "SUM"],
@@ -9,22 +11,22 @@
         "pdfNameForLegend": ["J/#psi", "#psi(2S)","Background", "Fit"],
         "pdfStyle": [1, 1, 2],
         "parVal": [
-          [3.096, 0.96e-01, 1.3489, 1.7826, 2.4077, 3.2354],
-          [3.68, 0.96e-01, 1.3489, 1.7826, 2.4077, 3.2354],
+          [3.075, 0.78e-01, 9.4460e-01, 8.8319e+00, 1.7792e+00, 151.9006e+00],
+          [3.68, 0.96e-01, 9.4460e-01, 8.8319e+00, 1.7792e+00, 151.9006e+00],
           [1.6432, 4.5482e-01, 3.6494e-01],
-          [252651, 4584, 500000]
+          [1000, 100, 23061]
         ],
         "parLimMin": [
-          [2.90, 6.0e-02, 1.3489, 1.7826, 2.4077, 3.2354],
-          [3.2, 6.0e-02, 1.3489, 1.7826, 2.4077, 3.2354],
+          [2.90, 6.0e-02, 9.4460e-01, 8.8319e+00, 1.7792e+00, 151.9006e+00],
+          [3.2, 6.0e-02, 9.4460e-01, 8.8319e+00, 1.7792e+00, 151.9006e+00],
           [-10, -10, -10],
-          [1000, 100, 1000]
+          [10, 1, 10]
         ],
         "parLimMax": [
-          [3.20, 1.5e-01, 1.3489, 1.7826, 2.4077, 3.2354],
-          [3.9, 1.5e-01, 1.3489, 1.7826, 2.4077, 3.2354],
+          [3.20, 1.5e-01, 9.4460e-01, 8.8319e+00, 1.7792e+00, 151.9006e+00],
+          [3.9, 1.5e-01, 9.4460e-01, 8.8319e+00, 1.7792e+00, 151.9006e+00],
           [10, 10, 10],
-          [5000000, 5000000, 5000000]
+          [5e7, 5e6, 5e7]
         ],
         "parName": [
           ["mean_Jpsi", "width_Jpsi", "a_Jpsi", "b_Jpsi", "c_Jpsi", "d_Jpsi"],
@@ -32,26 +34,28 @@
           ["aa", "bb", "cc"],
           ["sig_Jpsi", "sig_Psi2s", "bkg"]
         ],
-        "fitRangeMin": [2.1],
-        "fitRangeMax": [4.9],
+        "fitRangeMin": [2.1, 2.2, 2.3],
+        "fitRangeMax": [4.9, 4.8, 4.7],
         "rebin": 1,
         "ME_norm": "",
         "fitMethod": "likelyhood",
         "doResidualPlot": true,
         "doPullPlot": true, 
-        "doCorrMatPlot": true,
+        "doCorrMatPlot": false,
+        "doResidualPlotPdf": false, 
+        "doPullPlotPdf": false, 
         "doAlicePlot": true,
         "cosmeticsForAlicePlot": {
           "logScale" : false,
-          "yRangeMin" : 100,
-          "yRangeMax" : 100,
+          "yRangeMin" : 1,
+          "yRangeMax" : 1.2,
           "extraTextSize" : 0.025,
           "extraTextSpacing" : 0.04,
           "extraTextPos" : [0.75, 0.47],
           "legendPos" : [0.65, 0.60, 0.85, 0.89]
         },
         "sPlot": {
-          "sRun" : true,
+          "sRun" : false,
           "sVar" : "fCos2DeltaPhi",
           "sVarName" : "cos(2#Delta#phi)",
           "sRangeMin" : -1,
@@ -59,16 +63,16 @@
           "sBins" : 20,
           "sPars" : ["sig_Upsilon1s", "bkg"]
         },
-        "parForAlicePlot": ["mean_Jpsi", "width_Jpsi", "sig_Jpsi", "sig_Psi2s", "sOverB_Jpsi", "sgnf_Jpsi", "corrMatrStatus"],
-        "parNameForAlicePlot": ["#mu_{J/#psi}", "#sigma_{J/#psi}", "#it{N}_{J/#psi}", "#it{N}_{#psi(2S)}", "sOverB_Jpsi", "sgnf_Jpsi", "corrMatrStatus"],
+        "parForAlicePlot": ["mean_Jpsi", "width_Jpsi", "sig_Jpsi", "sig_Psi2s"],
+        "parNameForAlicePlot": ["#mu_{J/#psi}", "#sigma_{J/#psi}", "#it{N}_{J/#psi}", "#it{N}_{#psi(2S)}"],
         "text": [
-          [0.20, 0.87, "LHC22o CB2+VWG, #sqrt{#it{s}} = 13.6 TeV"], 
+          [0.20, 0.87, "LHC24aq pass1 CB2+VWG, #sqrt{#it{s}} = 5.36 TeV"], 
           [0.20, 0.80, "2.5 < #it{y} < 4, J/#psi #rightarrow #mu^{+}#mu^{-}"]
         ]
       }
     },
     "output": {
-      "output_file_name": "example",
-      "output_merged_file_name": "multi_trial_CB2_VWG.root"
+      "output_file_name": "/Users/lucamicheletti/GITHUB/dq_fitter/analysis/LHC24aq_pass1_medium/cross_section_std_assoc/LHC24/pt_dependence/Pt_10.0_20.0",
+      "output_merged_file_name": "multi_trial_CB2_VWG_data_tails"
     }
   }
