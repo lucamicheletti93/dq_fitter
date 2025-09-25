@@ -2,6 +2,8 @@
     "input": {
       "input_file_name": "tutorial.root",
       "input_name": ["histMass"],
+      "tailRootFileName": null,
+      "tailHistNames": ["data"],
       "pdf_dictionary": {
         "pdf": ["CB2", "CB2", "VWG", "SUM"],
         "pdfName": ["Jpsi", "Psi2s", "Bkg", "SUM"],
@@ -40,6 +42,8 @@
         "doResidualPlot": true,
         "doPullPlot": true, 
         "doCorrMatPlot": true,
+        "doResidualPlotPdf": false, 
+        "doPullPlotPdf": false, 
         "doAlicePlot": true,
         "cosmeticsForAlicePlot": {
           "logScale" : false,
