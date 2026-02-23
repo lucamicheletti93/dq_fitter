@@ -33,6 +33,8 @@ class DQFitter:
         self.fDoCorrMatPlot    = False
         self.fFileOutNameNew   = ""
         self.requiredArgs      = ["fitRangeMin", "fitRangeMax", "ME_norm", "fitMethod"]
+        self.fMean             = "meanJpsi"
+        self.fWidth            = "widthJpsi"
 
     def GetFileOutName(self):
         return self.fFileOutNameNew
@@ -270,7 +272,8 @@ class DQFitter:
             nbinsperGev = rooDsBinned.numEntries() / (self.fPdfDict["fitRangeMax"][0] - self.fPdfDict["fitRangeMin"][0])
             nBins = (fitRangeMax - fitRangeMin) * nbinsperGev
         
-            chi2 = ROOT.RooChi2Var("chi2", "chi2", pdf, rooDsBinned, False, ROOT.RooDataHist.SumW2)
+            #chi2 = ROOT.RooChi2Var("chi2", "chi2", pdf, rooDsBinned, False, ROOT.RooDataHist.SumW2)
+            chi2 = pdf.createChi2(rooDs, ROOT.RooFit.DataError(ROOT.RooAbsData.SumW2))
             nPars = rooFitRes.floatParsFinal().getSize()
             ndof = nBins - nPars
             reduced_chi2 = chi2.getVal() / ndof
@@ -281,7 +284,8 @@ class DQFitter:
             nbinsperGev = rooDs.numEntries() / (self.fPdfDict["fitRangeMax"][0] - self.fPdfDict["fitRangeMin"][0])
             nBins = (fitRangeMax - fitRangeMin) * nbinsperGev
         
-            chi2 = ROOT.RooChi2Var("chi2", "chi2", pdf, rooDs, False, ROOT.RooDataHist.SumW2)
+            #chi2 = ROOT.RooChi2Var("chi2", "chi2", pdf, rooDs, False, ROOT.RooDataHist.SumW2)
+            chi2 = pdf.createChi2(rooDs, ROOT.RooFit.DataError(ROOT.RooAbsData.SumW2))
             nPars = rooFitRes.floatParsFinal().getSize()
             ndof = nBins - nPars
             reduced_chi2 = chi2.getVal() / ndof
