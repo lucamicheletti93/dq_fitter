@@ -1,5 +1,6 @@
 #from telnetlib import DO
 import os
+import subprocess
 import re
 import ROOT
 from ROOT import TCanvas, TFile, TH1F, TPaveText, RooRealVar, RooDataSet, RooWorkspace, RooDataHist, RooArgSet
@@ -82,9 +83,48 @@ class DQFitter:
             #self.fTrialName = listName.replace("/Mass", "") + "_" + self.fTrialName + pdf + "_"
         #else:
             #self.fTrialName = self.fInputName + "_" + self.fTrialName + pdf + "_"
-        for i in range(0, len(self.fPdfDict["pdf"])):
+        """ for i in range(0, len(self.fPdfDict["pdf"])):
             if not self.fPdfDict["pdf"][i] == "SUM":
-                gROOT.ProcessLineSync(".x ../fit_library/{}Pdf.cxx+".format(self.fPdfDict["pdf"][i]))
+                gROOT.ProcessLineSync(".x ../fit_library/{}Pdf.cxx+".format(self.fPdfDict["pdf"][i])) """
+
+        _FIT_LIB_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fit_library")
+        _LIB_OUT = os.path.join(_FIT_LIB_DIR, "libFitLibrary.so")
+
+        # Collect PDFs to compile, ensuring uniqueness and excluding "SUM"
+        pdfs_to_compile = list(dict.fromkeys(pdf for pdf in self.fPdfDict["pdf"] if pdf != "SUM"))
+
+        # Checks if the library needs to be recompiled
+        cxx_files = [os.path.join(_FIT_LIB_DIR, f"{pdf}Pdf.cxx") for pdf in pdfs_to_compile]
+        h_files   = [os.path.join(_FIT_LIB_DIR, f"{pdf}Pdf.h")   for pdf in pdfs_to_compile]
+
+        needs_rebuild = (
+            not os.path.exists(_LIB_OUT) or
+            any(os.path.getmtime(src) > os.path.getmtime(_LIB_OUT) for src in cxx_files + h_files)
+        )
+
+        if needs_rebuild:
+            print(">>> Compiling fit library...")
+            dict_cxx_files = []
+            for pdf, h in zip(pdfs_to_compile, h_files):
+                dict_cxx = os.path.join(_FIT_LIB_DIR, f"{pdf}PdfDict.cxx")
+                subprocess.run(
+                    ["rootcling", "-v4", "-f", dict_cxx, "-c", h],
+                    check=True, cwd=_FIT_LIB_DIR
+                )
+                dict_cxx_files.append(dict_cxx)
+
+            root_flags = subprocess.check_output(["root-config", "--cflags", "--libs"]).decode().split()
+            compile_cmd = (
+                ["g++", "-shared", "-fPIC", "-o", _LIB_OUT]
+                + cxx_files + dict_cxx_files
+                + root_flags
+            )
+            subprocess.run(compile_cmd, check=True, cwd=_FIT_LIB_DIR)
+            print(">>> Fit library compiled successfully")
+        else:
+            print(">>> Fit library up to date, skipping compilation")
+
+        ROOT.gSystem.Load(_LIB_OUT)
         
         if tailRootFileName is not None and tailHistName is not None:
             fileTails = TFile(tailRootFileName, "READ")
