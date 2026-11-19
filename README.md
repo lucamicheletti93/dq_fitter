@@ -1,4 +1,20 @@
 ## DQ fitter
+### Setup the environment:
+The package works loading O2Physics environment, but on MacOS there could be some issues with the dependencies. To fix this issue the user can create a dedicated environment using conda follwong the instructions below:
+
+- Install Miniforge (https://github.com/conda-forge/miniforge?utm_source=chatgpt.com)
+- Once installed set the repository:
+  ```ruby
+  conda config --set channel_priority strict
+  ```
+- Create the environment:
+  ```ruby
+  conda create -n myDqFitter python=3.11 root -c conda-forge
+  ```
+- Activate the environment:
+  ```ruby
+  conda activate myDqFitter
+  ```
 ### Python class
 This python class is based on RooFit and allows to perform binned and unbinned fits. An example of fit can be found in /tutorial:
 
